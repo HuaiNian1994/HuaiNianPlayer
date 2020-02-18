@@ -105,7 +105,7 @@ class Content extends React.Component {
 				<View style={MyStyle.ContentMixes}>
 					<View style={MyStyle.ContentMixesBar}>
 						<Icon name="playlist-add" size={20} color="#fff" style={MyStyle.ContentMixesBarAdd}/>
-						<Text style={MyStyle.ContentMixesBarTitle}><Icon  name="expand-more" size={16} color="#fff" />  Mix created<Text style={{color:descriptionColor}}> (5)</Text></Text>
+						<Text style={MyStyle.ContentMixesBarTitle}><Icon  name="expand-more" size={16} color="#fff" />  Mix created<Text style={{color:descriptionColor,fontSize:12}}> (5)</Text></Text>
 					</View>
 					{/* <FlatList style={{width:"100%",height:"100%",backgroundColor:"red"}} data={[0,1,2,3,4,5,6,7,8]} renderItem={(data)=><Mix dt={data}></Mix>} keyExtractor={(item, index) => index+""}>
 						
@@ -128,8 +128,8 @@ class Record extends React.Component {
 	render() {
 		return (
 			<View style={MyStyle.Record}>
-				<View style={MyStyle.RecordIcon}><Icon name={this.props.name} size={20} color="#fff" /></View>
-				<View style={[MyStyle.RecordTitle,this.props.specialStyle]}><Text style={{color:"white"}}>{this.props.content}<Text style={{color:descriptionColor}}> {this.props.sum}</Text></Text></View>
+				<Icon style={MyStyle.RecordIcon} name={this.props.name} size={24} color="#fff" />
+				<View style={[MyStyle.RecordTitle,this.props.specialStyle]}><Text style={{color:"white",fontSize:17}}>{this.props.content}<Text style={{color:descriptionColor,fontSize:12}}> {this.props.sum}</Text></Text></View>
 			</View>)
 	}
 }
@@ -214,7 +214,7 @@ var MyStyle = StyleSheet.create({
 	},
 	ContentRecords: {
 		width: "100%",
-		height: "13.9%",
+		height: "18.9%",
 		backgroundColor: "rgba(100,100,100,0.1)",
 		marginBottom:5
 	},
