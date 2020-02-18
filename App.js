@@ -1,18 +1,47 @@
-import React, { Component } from 'react';
-import { View, Text, TextInput, StyleSheet, StatusBar, AppRegistry } from 'react-native';
+﻿import React, { Component } from 'react';
+import { View, Text, TextInput,PermissionsAndroid,Image, ImageBackground,ScrollView,StyleSheet, StatusBar, AppRegistry } from 'react-native';
 import TrackPlayer from 'react-native-track-player';
 import { name as appName } from './app.json'; //唯一的入口名称
 import Icon from 'react-native-vector-icons/FontAwesome';
 
+//不允许随系统设置缩放
+Text.defaultProps = Object.assign({}, Text.defaultProps, {allowFontScaling: false})
 
+async function requestStorageAccessPermission() {
+  try {
+    const answer = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+      {
+        title: '嘻嘻，我要读取你的文件',
+        message:
+          '你给不给？',
+        buttonNeutral: '等会再问我',
+        buttonNegative: 'NMSL',
+        buttonPositive: '哦',
+      },
+    );
+    if (answer === PermissionsAndroid.RESULTS.GRANTED) {
+		console.log('现在你获得权限了');
+		return true;
+    } else {
+		console.log('用户并不屌你');
+		return false;
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
+// requestStorageAccessPermission()
 // AppRegistry.registerComponent(appName, () => App);
 // TrackPlayer.registerPlaybackService(() => require('./trackserver.js'));
 // TrackPlayer.setupPlayer().then(async () => { });
+//http://192.168.43.202:3000/
+//file:///storage/emulated/0/LaProvence.mp3
 // var mytrack = {
 //   id: 'myId',
-//   url: " http://192.168.43.202:3000/",
+//   url: " file:///storage/emulated/0/LaProvence.mp3",
 //   title: 'myTitle',
-//   artist: 'myArtist',
+//   artist: 'Huainian',
 //   artwork: "file:///storage/emulated/0/1寸 小.png"
 // }
 // TrackPlayer.add(mytrack).then(() => {
@@ -21,12 +50,13 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 export default class AlignItemsBasics extends Component {
 	render() {
 		return (
-			<View style={MyStyle.Container}>
+			<ImageBackground source={require("./bg.jpg")} style={MyStyle.Container}>
+				{/* <Image source={require("./bg.jpg")} style={{width:"100%",height:"100%"}}></Image> */}
 				<StatusBar translucent={true} backgroundColor="transparent"></StatusBar>
 				<Nav></Nav>
-				<Content></Content>
-				<FootPlayer></FootPlayer>
-			</View>
+				{/* <Content></Content>
+				<FootPlayer></FootPlayer> */}
+			</ImageBackground>
 		);
 	}
 };
@@ -34,8 +64,7 @@ export default class AlignItemsBasics extends Component {
 
 
 
-//不允许随系统设置缩放
-Text.defaultProps = Object.assign({}, Text.defaultProps, {allowFontScaling: false})
+
 
 
 
