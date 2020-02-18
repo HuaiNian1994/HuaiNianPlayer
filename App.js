@@ -1,12 +1,12 @@
 ﻿import React, { Component } from 'react';
-import { View, Text, TextInput,PermissionsAndroid,Image, ImageBackground,ScrollView,StyleSheet, StatusBar, AppRegistry } from 'react-native';
+import { View, Text, TextInput,FlatList,PermissionsAndroid,Dimensions ,PixelRatio,Image, ImageBackground,ScrollView,StyleSheet, StatusBar, AppRegistry } from 'react-native';
 import TrackPlayer from 'react-native-track-player';
 import { name as appName } from './app.json'; //唯一的入口名称
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 //不允许随系统设置缩放
 Text.defaultProps = Object.assign({}, Text.defaultProps, {allowFontScaling: false})
-
+const descriptionColor="rgba(115,115,115,0.6)";
 async function requestStorageAccessPermission() {
   try {
     const answer = await PermissionsAndroid.request(
@@ -47,15 +47,17 @@ async function requestStorageAccessPermission() {
 // TrackPlayer.add(mytrack).then(() => {
 //   TrackPlayer.play();
 // })
+
+const containerWidth=Dimensions.get('window').width;
+const containerHeight=Dimensions.get('window').height*1.064;
 export default class AlignItemsBasics extends Component {
 	render() {
 		return (
-			<ImageBackground source={require("./bg.jpg")} style={MyStyle.Container}>
-				{/* <Image source={require("./bg.jpg")} style={{width:"100%",height:"100%"}}></Image> */}
+			<ImageBackground source={require("./bg.jpg")} style={MyStyle.Container,{width:containerWidth,height:containerHeight}}>
 				<StatusBar translucent={true} backgroundColor="transparent"></StatusBar>
 				<Nav></Nav>
-				{/* <Content></Content>
-				<FootPlayer></FootPlayer> */}
+				<Content></Content>
+				<FootPlayer></FootPlayer>
 			</ImageBackground>
 		);
 	}
@@ -82,9 +84,9 @@ class Nav extends React.Component {
 	render() {
 		return (
 			<View style={MyStyle.Nav}>
-				<TextInput style={MyStyle.NavContent}>
+				<TextInput style={MyStyle.NavContent} placeholder="What do you want...?" placeholderTextColor="red">
 				</TextInput>
-				<View style={MyStyle.NavIcon}><Text>搜</Text></View>
+				<View style={MyStyle.NavIcon}><Icon name="search" size={18} color="#fff" /></View>
 			</View>)
 	}
 }
@@ -97,19 +99,24 @@ class Content extends React.Component {
 		return (
 			<View style={MyStyle.Content}>
 				<View style={MyStyle.ContentRecords}>
-					<Record ></Record>
-					<Record ></Record>
+					<Record name="library-music" content="Local music" sum="(0)" specialStyle={{borderBottomColor:"rgba(155,155,155,0.3)",borderBottomWidth:1}}></Record>
+					<Record name="history" content="Recent play" ></Record>
 				</View>
 				<View style={MyStyle.ContentMixes}>
 					<View style={MyStyle.ContentMixesBar}>
-						<View style={MyStyle.ContentMixesBarAdd}></View>
-						<View style={MyStyle.ContentMixesBarTitle}></View>
+						<Icon name="playlist-add" size={20} color="#fff" style={MyStyle.ContentMixesBarAdd}/>
+						<Text style={MyStyle.ContentMixesBarTitle}><Icon  name="expand-more" size={16} color="#fff" />  Mix created<Text style={{color:descriptionColor}}> (5)</Text></Text>
 					</View>
+					{/* <FlatList style={{width:"100%",height:"100%",backgroundColor:"red"}} data={[0,1,2,3,4,5,6,7,8]} renderItem={(data)=><Mix dt={data}></Mix>} keyExtractor={(item, index) => index+""}>
+						
+					</FlatList> */}
 					<Mix></Mix>
 					<Mix></Mix>
 					<Mix></Mix>
 					<Mix></Mix>
 					<Mix></Mix>
+					<Mix></Mix>
+					
 				</View>
 			</View>)
 	}
@@ -121,8 +128,8 @@ class Record extends React.Component {
 	render() {
 		return (
 			<View style={MyStyle.Record}>
-				<View style={MyStyle.RecordIcon}><Icon name="rocket" size={30} color="#fff" /></View>
-				<View style={MyStyle.RecordTitle}><Text>Local Music</Text></View>
+				<View style={MyStyle.RecordIcon}><Icon name={this.props.name} size={20} color="#fff" /></View>
+				<View style={[MyStyle.RecordTitle,this.props.specialStyle]}><Text style={{color:"white"}}>{this.props.content}<Text style={{color:descriptionColor}}> {this.props.sum}</Text></Text></View>
 			</View>)
 	}
 }
@@ -134,9 +141,9 @@ class Mix extends React.Component {
 		return (
 			<View style={MyStyle.Mix}>
 				<View style={MyStyle.MixCover}></View>
-				<View style={MyStyle.MixTitle}></View>
-				<View style={MyStyle.MixSubTitle}></View>
-				<View style={MyStyle.MixMenu}></View>
+				<Text style={MyStyle.MixTitle}>槐念喜爱的音乐</Text>
+				<Text style={MyStyle.MixSubTitle}>57songs</Text>
+				<Icon name="more-vert" style={MyStyle.MixMenu} size={20} color="#fff" />
 			</View>)
 	}
 }
@@ -149,10 +156,11 @@ class FootPlayer extends React.Component {
 		return (
 			<View style={MyStyle.FootPlayer}>
 				<View style={MyStyle.FootPlayerCover}></View>
-				<View style={MyStyle.FootPlayerTitle}></View>
-				<View style={MyStyle.FootPlayerSubTitle}></View>
-				<View style={MyStyle.FootPlayerController}></View>
-				<View style={MyStyle.FootPlayerPlaylist}></View>
+				<Text style={MyStyle.FootPlayerTitle}>The Moon</Text>
+				<Text style={MyStyle.FootPlayerSubTitle}>Swipe left/right to play last/next</Text>
+				<Icon style={MyStyle.FootPlayerController} name="play-circle-outline" size={30}></Icon>
+				<Icon style={MyStyle.FootPlayerPlaylist} name="playlist-play" size={22}></Icon>
+				
 			</View>)
 	}
 }
@@ -168,14 +176,13 @@ var MyStyle = StyleSheet.create({
 		justifyContent: "flex-start",
 		alignItems: "stretch",
 		backgroundColor: "blue",
-		top: 0,
-		width: "100%",
-		height: "100%"
+		top: 0
+
 	},
 	Nav: {
 		height: "11%",//不要把数值写成字符串，否则应用崩溃
 		width: "100%",
-		backgroundColor: "red",
+		backgroundColor: "rgba(155,155,155,0.4)",
 		display: "flex",
 		position: "absolute"
 
@@ -185,9 +192,10 @@ var MyStyle = StyleSheet.create({
 		position: "absolute",
 		width: "61.8%",
 		height: "21.8%",
-		bottom: "21.8%",
+		bottom: "15.8%",
 		left: "19.1%",//50-61.8/2
-		backgroundColor: "green"
+		borderBottomColor:"rgba(155,155,155,0.2)",
+		borderBottomWidth:1
 	},
 	NavIcon: {
 		position: "absolute",
@@ -195,32 +203,33 @@ var MyStyle = StyleSheet.create({
 		height: "21.8%",
 		right: "4.8%",
 		bottom: "21.8%",//50-21.8/2
-		borderRadius: 999,
-		backgroundColor: "blue"
+		borderRadius: 999
 	},
 	Content: {
 		position: "absolute",
-		top: "12%",
+		top: "11%",
 		height: "81%",
 		width: "100%",
-		backgroundColor: "yellow"
+		// backgroundColor: "yellow"
 	},
 	ContentRecords: {
 		width: "100%",
 		height: "13.9%",
-		backgroundColor: "rgba(155,155,155,0.8)"
+		backgroundColor: "rgba(100,100,100,0.1)",
+		marginBottom:5
 	},
 	Record: {
 		position: "relative",
 		width: "100%",
 		height: "50%",
-		backgroundColor: "rgba(225,225,225,0.8)"
+		// backgroundColor: "rgba(225,225,225,0.8)"
+		
 	},
 	RecordIcon: {
 		position: "absolute",
 		width: "6.3%",
 		height: "45%",
-		backgroundColor: "rgba(105,105,105,0.8)",
+		// backgroundColor: "rgba(105,105,105,0.8)",
 		left: "7.4%",
 		top: "27.5%"//50-45/2
 	},
@@ -228,7 +237,7 @@ var MyStyle = StyleSheet.create({
 		position: "absolute",
 		width: "78%",
 		height: "100%",
-		backgroundColor: "rgba(105,105,105,0.8)",
+		// backgroundColor: "rgba(105,105,105,0.8)",
 		right: 0,
 		top: 0,//50-45/2
 		display: "flex",
@@ -238,36 +247,35 @@ var MyStyle = StyleSheet.create({
 	ContentMixes: {
 		width: "100%",
 		height: "84%",
-		backgroundColor: "rgba(185,185,185,0.8)"
+		backgroundColor: "rgba(100,100,100,0.1)",
 	},
 	ContentMixesBar: {
+		display:"flex",
 		position: "relative",
 		width: "100%",
 		height: "8.5%",
-		backgroundColor: "rgba(88,88,88,0.8)"
+		// backgroundColor: "rgba(88,88,88,0.8)",
+		justifyContent:"center"
 	},
 	ContentMixesBarTitle: {
 		position: "absolute",
 		left: "10.3%",
-		top: "44.85%",
 		width: "61.8%",
-		height: "30%",
-		backgroundColor: "rgba(88,88,188,0.8)"
+		color:"white",
+		fontSize:16
+		// backgroundColor: "rgba(88,88,188,0.8)"
 	},
 	ContentMixesBarAdd: {
 		position: "absolute",
-		top: "44.85%",
-		right: "4.2%",
-		width: "4.2%",
-		height: "30%",
-		backgroundColor: "rgba(188,88,88,0.8)"
+		right: "4.2%"
+		// backgroundColor: "rgba(188,88,88,0.8)"
 	},
 	Mix: {
 		position: "relative",
 		width: "100%",
 		height: "10.2%",
 		marginBottom: 5,
-		backgroundColor: "rgba(88,8,88,0.8)"
+		// backgroundColor: "rgba(88,8,88,0.8)"
 	},
 	MixCover: {
 		position: "absolute",
@@ -279,27 +287,29 @@ var MyStyle = StyleSheet.create({
 	},
 	MixTitle: {
 		position: "absolute",
+		fontSize:14,
 		width: "78%",
-		height: "28%",
+		// height: "28%",
 		right: 0,
 		top: "14.7%",
-		backgroundColor: "rgba(188,8,88,0.8)"
+		color:"white"
+		// backgroundColor: "rgba(188,8,88,0.8)"
 	},
 	MixSubTitle: {
 		position: "absolute",
+		fontSize:8,
 		width: "78%",
-		height: "16%",
+		// height: "16%",
 		right: 0,
 		top: "66.7%",
-		backgroundColor: "rgba(188,8,88,0.8)"
+		color:"rgb(165,165,165)"
+		// backgroundColor: "rgba(188,8,88,0.8)"
 	},
 	MixMenu: {
 		position: "absolute",
-		width: "4.4%",
-		height: "32%",
 		right: "4.4%",
-		top: "39%",
-		backgroundColor: "rgba(188,8,188,0.8)"
+		top: "30%",
+		// backgroundColor: "rgba(188,8,188,0.8)"
 	},
 	MixSum: {
 		position: "absolute",
@@ -314,7 +324,7 @@ var MyStyle = StyleSheet.create({
 		top: "93.24%",
 		height: "6.75%",
 		width: "100%",
-		backgroundColor: "orange"
+		backgroundColor: "rgba(155,155,155,0.4)",
 	},
 	FootPlayerCover: {
 		position: "absolute",
@@ -322,39 +332,46 @@ var MyStyle = StyleSheet.create({
 		top: "12.5%",//50-75/2
 		width: "10%",
 		height: "75%",
+		borderRadius:9999,
 		backgroundColor: "rgba(188,8,88,0.8)"
 	},
 	FootPlayerTitle: {
 		position: "absolute",
+		fontSize:13,
+		color:"white",
 		left: "13.7%",
 		top: "19.2%",
 		width: "61.8%",
 		height: "27.3%",
-		backgroundColor: "rgba(18,8,88,0.8)"
+		// backgroundColor: "rgba(18,8,88,0.8)"
 	},
 	FootPlayerSubTitle: {
 		position: "absolute",
+		fontSize:11,
+		color:"rgba(195,195,195,0.9)",
 		left: "13.7%",
 		top: "64.4%",
 		width: "61.8%",
 		height: "24.7%",
-		backgroundColor: "rgba(188,8,8,0.8)"
+		// backgroundColor: "rgba(188,8,8,0.8)"
 	},
 	FootPlayerController: {
 		position: "absolute",
 		left: "77.9%",
 		top: "22.6%",//50-54.8/2
-		width: "7.4%",
-		height: "54.8%",
-		backgroundColor: "rgba(88,88,8,0.8)"
+		color:"white"
+		// width: "7.4%",
+		// height: "54.8%",
+		// backgroundColor: "rgba(88,88,8,0.8)"
 	},
 	FootPlayerPlaylist: {
 		position: "absolute",
 		left: "91.2%",
-		top: "29.45%",//50-41.1/2
-		width: "5.6%",
-		height: "41.1%",
-		backgroundColor: "rgba(88,88,118,0.8)"
+		top: "35%",//50-41.1/2
+		color:"white"
+		// width: "5.6%",
+		// height: "41.1%",
+		// backgroundColor: "rgba(88,88,118,0.8)"
 	}
 
 
