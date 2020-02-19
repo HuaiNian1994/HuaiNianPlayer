@@ -56,7 +56,7 @@ export default class AlignItemsBasics extends Component {
 		return (
 			<ImageBackground source={require("./bg.jpg")} style={MyStyle.Container, { width: containerWidth, height: containerHeight }}>
 				<StatusBar translucent={true} backgroundColor="transparent"></StatusBar>
-				<Nav></Nav>
+				<Nav title="Mine"></Nav>
 				<Content></Content>
 				
 				<FootPlayer></FootPlayer>
@@ -88,6 +88,7 @@ class Nav extends React.Component {
 		return (
 			<View style={MyStyle.Nav}>
 				<Icon name="sort" style={MyStyle.NavMenu} size={25} color="#fff"/>
+				<Text style={[MyStyle.NavTitle,{borderBottomWidth:this.props.title=="Mine"?2:0}]}>{this.props.title}</Text>
 				<TextInput style={MyStyle.NavContent} placeholder="What do you want...?" placeholderTextColor="rgba(55,55,55,0.4)">
 				</TextInput>
 				<View style={MyStyle.NavIcon}><Icon name="search" size={25} color="#fff" /></View>
@@ -116,7 +117,7 @@ class Content extends React.Component {
 					{/* <FlatList style={{width:"100%",height:"100%",backgroundColor:"red"}} data={[0,1,2,3,4,5,6,7,8]} renderItem={(data)=><Mix dt={data}></Mix>} keyExtractor={(item, index) => index+""}>
 						
 					</FlatList> */}
-					<TextInput></TextInput>
+					
 					<Mix></Mix>
 					<Mix></Mix>
 					<Mix></Mix>
@@ -215,6 +216,18 @@ var MyStyle = StyleSheet.create({
 		bottom: "14.8%",//50-21.8/2
 		// borderRadius: 999
 	},
+	NavTitle: {
+		position: "absolute",
+		// width: "4.8%",
+		height: "42%",
+		color:"white",
+		fontSize:18,
+		left: "22%",
+		bottom: 0,//50-21.8/2
+		borderBottomColor:"rgba(155,155,155,0.9)",
+		// borderRadius: 999
+		// backgroundColor:"red"
+	},
 	NavIcon: {
 		position: "absolute",
 		// width: "4.8%",
@@ -291,7 +304,7 @@ var MyStyle = StyleSheet.create({
 	},
 	ContentMixesBarAdd: {
 		position: "absolute",
-		right: "12%"
+		right: "14%"
 		// backgroundColor: "rgba(188,88,88,0.8)"
 	},
 	ContentMixesBarMore: {
