@@ -1,0 +1,33 @@
+git pull https://github.com/HuaiNian1994/HuaiNianPlayer.git
+
+git remote add HuaiNianPlayer https://github.com/HuaiNian1994/HuaiNianPlayer.git
+
+git push --set-upstream HuaiNianPlayer master
+
+yarn start
+
+yarn android
+
+react-native link
+
+react-native unlink
+
+yarn add 
+
+yarn remove
+
+
+@react-native-community/async-storage
+
+react-native-navigation
+
+Execution failed for task ':app:generateDebugBuildConfig'.
+> Could not read path '
+
+
+Execution failed for task ':app:processDebugManifest'.
+> Manifest merger failed : uses-sdk:minSdkVersion 16 cannot be smaller than vers
+ion 18 declared in library [com.github.wix-playground:reflow-animator:1.0.6] C:\
+Users\Administrator\.gradle\caches\transforms-2\files-2.1\db671b6754d0178c906105
+c4a69a19b4\AndroidManifest.xml as the library might be using APIs not available
+in 16

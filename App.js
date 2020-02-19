@@ -31,22 +31,23 @@ async function requestStorageAccessPermission() {
 		console.log(err);
 	}
 }
-requestStorageAccessPermission()
-AppRegistry.registerComponent(appName, () => App);
-TrackPlayer.registerPlaybackService(() => require('./trackserver.js'));
-TrackPlayer.setupPlayer().then(async () => { });
-http://192.168.43.202:3000/
-file:///storage/emulated/0/LaProvence.mp3
-var mytrack = {
-  id: 'myId',
-  url: " file:///storage/emulated/0/LaProvence.mp3",
-  title: 'myTitle',
-  artist: 'Huainian',
-  artwork: "file:///storage/emulated/0/1寸 小.png"
-}
-TrackPlayer.add(mytrack).then(() => {
-  TrackPlayer.play();
-})
+requestStorageAccessPermission();
+
+// AppRegistry.registerComponent(appName, () => App);
+// TrackPlayer.registerPlaybackService(() => require('./trackserver.js'));
+// TrackPlayer.setupPlayer().then(async () => { });
+// http://192.168.43.202:3000/
+// file:///storage/emulated/0/LaProvence.mp3
+// var mytrack = {
+//   id: 'myId',
+//   url: " http://192.168.43.202:3000/",
+//   title: 'myTitle',
+//   artist: 'Huainian',
+//   artwork: "file:///storage/emulated/0/1寸 小.png"
+// }
+// TrackPlayer.add(mytrack).then(() => {
+//   TrackPlayer.play();
+// })
 
 const containerWidth = Dimensions.get('window').width;
 const containerHeight = Dimensions.get('window').height * 1.064;
@@ -57,7 +58,9 @@ export default class AlignItemsBasics extends Component {
 				<StatusBar translucent={true} backgroundColor="transparent"></StatusBar>
 				<Nav></Nav>
 				<Content></Content>
+				
 				<FootPlayer></FootPlayer>
+				
 			</ImageBackground>
 		);
 	}
@@ -84,9 +87,10 @@ class Nav extends React.Component {
 	render() {
 		return (
 			<View style={MyStyle.Nav}>
-				<TextInput style={MyStyle.NavContent} placeholder="What do you want...?" placeholderTextColor="red">
+				<Icon name="sort" style={MyStyle.NavMenu} size={25} color="#fff"/>
+				<TextInput style={MyStyle.NavContent} placeholder="What do you want...?" placeholderTextColor="rgba(55,55,55,0.4)">
 				</TextInput>
-				<View style={MyStyle.NavIcon}><Icon name="search" size={18} color="#fff" /></View>
+				<View style={MyStyle.NavIcon}><Icon name="search" size={25} color="#fff" /></View>
 			</View>)
 	}
 }
@@ -112,6 +116,7 @@ class Content extends React.Component {
 					{/* <FlatList style={{width:"100%",height:"100%",backgroundColor:"red"}} data={[0,1,2,3,4,5,6,7,8]} renderItem={(data)=><Mix dt={data}></Mix>} keyExtractor={(item, index) => index+""}>
 						
 					</FlatList> */}
+					<TextInput></TextInput>
 					<Mix></Mix>
 					<Mix></Mix>
 					<Mix></Mix>
@@ -192,20 +197,31 @@ var MyStyle = StyleSheet.create({
 	},
 	NavContent: {
 		position: "absolute",
-		width: "61.8%",
+		padding:0,
+		width: "38.2%",
 		height: "21.8%",
 		bottom: "15.8%",
-		left: "19.1%",//50-61.8/2
-		borderBottomColor: "rgba(155,155,155,0.2)",
-		borderBottomWidth: 1
+		left: "38.2%",//50-61.8/2
+		// borderBottomColor: "rgba(155,155,155,0.1)",
+		// borderBottomWidth: 0.2,
+		textAlign:"center"
+		// backgroundColor:"red"
+	},
+	NavMenu: {
+		position: "absolute",
+		// width: "4.8%",
+		// height: "21.8%",
+		left: "4.2%",
+		bottom: "14.8%",//50-21.8/2
+		// borderRadius: 999
 	},
 	NavIcon: {
 		position: "absolute",
-		width: "4.8%",
-		height: "21.8%",
+		// width: "4.8%",
+		// height: "21.8%",
 		right: "4.8%",
-		bottom: "21.8%",//50-21.8/2
-		borderRadius: 999
+		bottom: "14.8%",//50-21.8/2
+		// borderRadius: 999
 	},
 	Content: {
 		position: "absolute",
@@ -261,7 +277,7 @@ var MyStyle = StyleSheet.create({
 	},
 	ContentMixesBarTitle: {
 		position: "absolute",
-		left: "15.3%",
+		left: "8%",
 		width: "61.8%",
 		color: "white",
 		fontSize: 18
@@ -269,7 +285,7 @@ var MyStyle = StyleSheet.create({
 	},
 	ContentMixesBarDropDown: {
 		position: "absolute",
-		left: "10.3%",
+		left: "4.2%",
 		color: "white",
 		// backgroundColor: "rgba(88,88,188,0.8)"
 	},
