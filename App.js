@@ -1,35 +1,35 @@
 ﻿import React, { Component } from 'react';
-import { View, Text, TextInput,FlatList,PermissionsAndroid,Dimensions ,PixelRatio,Image, ImageBackground,ScrollView,StyleSheet, StatusBar, AppRegistry } from 'react-native';
+import { View, Text, TextInput, FlatList, PermissionsAndroid, Dimensions, PixelRatio, Image, ImageBackground, ScrollView, StyleSheet, StatusBar, AppRegistry } from 'react-native';
 import TrackPlayer from 'react-native-track-player';
 import { name as appName } from './app.json'; //唯一的入口名称
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 //不允许随系统设置缩放
-Text.defaultProps = Object.assign({}, Text.defaultProps, {allowFontScaling: false})
-const descriptionColor="rgba(115,115,115,0.6)";
+Text.defaultProps = Object.assign({}, Text.defaultProps, { allowFontScaling: false })
+const descriptionColor = "rgba(115,115,115,0.6)";
 async function requestStorageAccessPermission() {
-  try {
-    const answer = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-      {
-        title: '嘻嘻，我要读取你的文件',
-        message:
-          '你给不给？',
-        buttonNeutral: '等会再问我',
-        buttonNegative: 'NMSL',
-        buttonPositive: '哦',
-      },
-    );
-    if (answer === PermissionsAndroid.RESULTS.GRANTED) {
-		console.log('现在你获得权限了');
-		return true;
-    } else {
-		console.log('用户并不屌你');
-		return false;
-    }
-  } catch (err) {
-    console.log(err);
-  }
+	try {
+		const answer = await PermissionsAndroid.request(
+			PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+			{
+				title: '嘻嘻，我要读取你的文件',
+				message:
+					'你给不给？',
+				buttonNeutral: '等会再问我',
+				buttonNegative: 'NMSL',
+				buttonPositive: '哦',
+			},
+		);
+		if (answer === PermissionsAndroid.RESULTS.GRANTED) {
+			console.log('现在你获得权限了');
+			return true;
+		} else {
+			console.log('用户并不屌你');
+			return false;
+		}
+	} catch (err) {
+		console.log(err);
+	}
 }
 // requestStorageAccessPermission()
 // AppRegistry.registerComponent(appName, () => App);
@@ -48,12 +48,12 @@ async function requestStorageAccessPermission() {
 //   TrackPlayer.play();
 // })
 
-const containerWidth=Dimensions.get('window').width;
-const containerHeight=Dimensions.get('window').height*1.064;
+const containerWidth = Dimensions.get('window').width;
+const containerHeight = Dimensions.get('window').height * 1.064;
 export default class AlignItemsBasics extends Component {
 	render() {
 		return (
-			<ImageBackground source={require("./bg.jpg")} style={MyStyle.Container,{width:containerWidth,height:containerHeight}}>
+			<ImageBackground source={require("./bg.jpg")} style={MyStyle.Container, { width: containerWidth, height: containerHeight }}>
 				<StatusBar translucent={true} backgroundColor="transparent"></StatusBar>
 				<Nav></Nav>
 				<Content></Content>
@@ -99,13 +99,15 @@ class Content extends React.Component {
 		return (
 			<View style={MyStyle.Content}>
 				<View style={MyStyle.ContentRecords}>
-					<Record name="library-music" content="Local music" sum="(0)" specialStyle={{borderBottomColor:"rgba(155,155,155,0.3)",borderBottomWidth:1}}></Record>
+					<Record name="library-music" content="Local music" sum="(0)" specialStyle={{ borderBottomColor: "rgba(155,155,155,0.3)", borderBottomWidth: 1 }}></Record>
 					<Record name="history" content="Recent play" ></Record>
 				</View>
 				<View style={MyStyle.ContentMixes}>
 					<View style={MyStyle.ContentMixesBar}>
-						<Icon name="playlist-add" size={20} color="#fff" style={MyStyle.ContentMixesBarAdd}/>
-						<Text style={MyStyle.ContentMixesBarTitle}><Icon  name="expand-more" size={16} color="#fff" />  Mix created<Text style={{color:descriptionColor,fontSize:12}}> (5)</Text></Text>
+						<Icon name="add" size={20} color="#fff" style={MyStyle.ContentMixesBarAdd} />
+						<Icon name="more-vert" size={20} color="#fff" style={MyStyle.ContentMixesBarMore} />
+						<Icon style={MyStyle.ContentMixesBarDropDown} name="expand-more" size={20} color="#fff" />
+						<Text style={MyStyle.ContentMixesBarTitle}>  Mix created<Text style={{ color: descriptionColor, fontSize: 12 }}> (5)</Text></Text>
 					</View>
 					{/* <FlatList style={{width:"100%",height:"100%",backgroundColor:"red"}} data={[0,1,2,3,4,5,6,7,8]} renderItem={(data)=><Mix dt={data}></Mix>} keyExtractor={(item, index) => index+""}>
 						
@@ -116,7 +118,7 @@ class Content extends React.Component {
 					<Mix></Mix>
 					<Mix></Mix>
 					<Mix></Mix>
-					
+
 				</View>
 			</View>)
 	}
@@ -129,7 +131,7 @@ class Record extends React.Component {
 		return (
 			<View style={MyStyle.Record}>
 				<Icon style={MyStyle.RecordIcon} name={this.props.name} size={24} color="#fff" />
-				<View style={[MyStyle.RecordTitle,this.props.specialStyle]}><Text style={{color:"white",fontSize:17}}>{this.props.content}<Text style={{color:descriptionColor,fontSize:12}}> {this.props.sum}</Text></Text></View>
+				<View style={[MyStyle.RecordTitle, this.props.specialStyle]}><Text style={{ color: "white", fontSize: 17 }}>{this.props.content}<Text style={{ color: descriptionColor, fontSize: 12 }}> {this.props.sum}</Text></Text></View>
 			</View>)
 	}
 }
@@ -140,7 +142,7 @@ class Mix extends React.Component {
 	render() {
 		return (
 			<View style={MyStyle.Mix}>
-				<View style={MyStyle.MixCover}></View>
+				<View style={MyStyle.MixCover}><Image style={{ width: "100%", height: "100%", position: "absolute", borderRadius: 10, opacity: 0.3 }} source={{ uri: "file:///storage/emulated/0/shunza.jpg" }}></Image><Icon style={{ fontWeight: "100" }} name="favorite-border" size={33} color="#fff" /></View>
 				<Text style={MyStyle.MixTitle}>槐念喜爱的音乐</Text>
 				<Text style={MyStyle.MixSubTitle}>57songs</Text>
 				<Icon name="more-vert" style={MyStyle.MixMenu} size={20} color="#fff" />
@@ -155,12 +157,12 @@ class FootPlayer extends React.Component {
 	render() {
 		return (
 			<View style={MyStyle.FootPlayer}>
-				<View style={MyStyle.FootPlayerCover}></View>
+				<View style={MyStyle.FootPlayerCover}><Image style={{ width: "100%", height: "100%", borderRadius: 999 }} source={{ uri: "file:///storage/emulated/0/shunza.jpg" }}></Image></View>
 				<Text style={MyStyle.FootPlayerTitle}>The Moon</Text>
 				<Text style={MyStyle.FootPlayerSubTitle}>Swipe left/right to play last/next</Text>
 				<Icon style={MyStyle.FootPlayerController} name="play-circle-outline" size={30}></Icon>
 				<Icon style={MyStyle.FootPlayerPlaylist} name="playlist-play" size={22}></Icon>
-				
+
 			</View>)
 	}
 }
@@ -194,8 +196,8 @@ var MyStyle = StyleSheet.create({
 		height: "21.8%",
 		bottom: "15.8%",
 		left: "19.1%",//50-61.8/2
-		borderBottomColor:"rgba(155,155,155,0.2)",
-		borderBottomWidth:1
+		borderBottomColor: "rgba(155,155,155,0.2)",
+		borderBottomWidth: 1
 	},
 	NavIcon: {
 		position: "absolute",
@@ -216,14 +218,14 @@ var MyStyle = StyleSheet.create({
 		width: "100%",
 		height: "18.9%",
 		backgroundColor: "rgba(100,100,100,0.1)",
-		marginBottom:5
+		marginBottom: 5
 	},
 	Record: {
 		position: "relative",
 		width: "100%",
 		height: "50%",
 		// backgroundColor: "rgba(225,225,225,0.8)"
-		
+
 	},
 	RecordIcon: {
 		position: "absolute",
@@ -250,24 +252,35 @@ var MyStyle = StyleSheet.create({
 		backgroundColor: "rgba(100,100,100,0.1)",
 	},
 	ContentMixesBar: {
-		display:"flex",
+		display: "flex",
 		position: "relative",
 		width: "100%",
 		height: "8.5%",
 		// backgroundColor: "rgba(88,88,88,0.8)",
-		justifyContent:"center"
+		justifyContent: "center"
 	},
 	ContentMixesBarTitle: {
 		position: "absolute",
-		left: "10.3%",
+		left: "15.3%",
 		width: "61.8%",
-		color:"white",
-		fontSize:16
+		color: "white",
+		fontSize: 18
+		// backgroundColor: "rgba(88,88,188,0.8)"
+	},
+	ContentMixesBarDropDown: {
+		position: "absolute",
+		left: "10.3%",
+		color: "white",
 		// backgroundColor: "rgba(88,88,188,0.8)"
 	},
 	ContentMixesBarAdd: {
 		position: "absolute",
-		right: "4.2%"
+		right: "12%"
+		// backgroundColor: "rgba(188,88,88,0.8)"
+	},
+	ContentMixesBarMore: {
+		position: "absolute",
+		right: "4.4%"
 		// backgroundColor: "rgba(188,88,88,0.8)"
 	},
 	Mix: {
@@ -279,30 +292,34 @@ var MyStyle = StyleSheet.create({
 	},
 	MixCover: {
 		position: "absolute",
+		display: "flex",
+		justifyContent: "center",
+		alignItems: "center",
+
 		width: "13.9%",
 		height: "100%",
 		left: "4.2%",
-		backgroundColor: "rgba(188,8,88,0.8)",
+		backgroundColor: "#000",
 		borderRadius: 10
 	},
 	MixTitle: {
 		position: "absolute",
-		fontSize:14,
+		fontSize: 14,
 		width: "78%",
 		// height: "28%",
 		right: 0,
 		top: "14.7%",
-		color:"white"
+		color: "white"
 		// backgroundColor: "rgba(188,8,88,0.8)"
 	},
 	MixSubTitle: {
 		position: "absolute",
-		fontSize:8,
+		fontSize: 8,
 		width: "78%",
 		// height: "16%",
 		right: 0,
 		top: "66.7%",
-		color:"rgb(165,165,165)"
+		color: "rgb(165,165,165)"
 		// backgroundColor: "rgba(188,8,88,0.8)"
 	},
 	MixMenu: {
@@ -332,13 +349,13 @@ var MyStyle = StyleSheet.create({
 		top: "12.5%",//50-75/2
 		width: "10%",
 		height: "75%",
-		borderRadius:9999,
-		backgroundColor: "rgba(188,8,88,0.8)"
+		borderRadius: 9999,
+		// backgroundColor: "rgba(188,8,88,0.8)"
 	},
 	FootPlayerTitle: {
 		position: "absolute",
-		fontSize:13,
-		color:"white",
+		fontSize: 13,
+		color: "white",
 		left: "13.7%",
 		top: "19.2%",
 		width: "61.8%",
@@ -347,8 +364,8 @@ var MyStyle = StyleSheet.create({
 	},
 	FootPlayerSubTitle: {
 		position: "absolute",
-		fontSize:11,
-		color:"rgba(195,195,195,0.9)",
+		fontSize: 11,
+		color: "rgba(195,195,195,0.9)",
 		left: "13.7%",
 		top: "64.4%",
 		width: "61.8%",
@@ -359,7 +376,7 @@ var MyStyle = StyleSheet.create({
 		position: "absolute",
 		left: "77.9%",
 		top: "22.6%",//50-54.8/2
-		color:"white"
+		color: "white"
 		// width: "7.4%",
 		// height: "54.8%",
 		// backgroundColor: "rgba(88,88,8,0.8)"
@@ -368,7 +385,7 @@ var MyStyle = StyleSheet.create({
 		position: "absolute",
 		left: "91.2%",
 		top: "35%",//50-41.1/2
-		color:"white"
+		color: "white"
 		// width: "5.6%",
 		// height: "41.1%",
 		// backgroundColor: "rgba(88,88,118,0.8)"
