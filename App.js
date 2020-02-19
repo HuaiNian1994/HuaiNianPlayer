@@ -31,22 +31,22 @@ async function requestStorageAccessPermission() {
 		console.log(err);
 	}
 }
-// requestStorageAccessPermission()
-// AppRegistry.registerComponent(appName, () => App);
-// TrackPlayer.registerPlaybackService(() => require('./trackserver.js'));
-// TrackPlayer.setupPlayer().then(async () => { });
-//http://192.168.43.202:3000/
-//file:///storage/emulated/0/LaProvence.mp3
-// var mytrack = {
-//   id: 'myId',
-//   url: " file:///storage/emulated/0/LaProvence.mp3",
-//   title: 'myTitle',
-//   artist: 'Huainian',
-//   artwork: "file:///storage/emulated/0/1寸 小.png"
-// }
-// TrackPlayer.add(mytrack).then(() => {
-//   TrackPlayer.play();
-// })
+requestStorageAccessPermission()
+AppRegistry.registerComponent(appName, () => App);
+TrackPlayer.registerPlaybackService(() => require('./trackserver.js'));
+TrackPlayer.setupPlayer().then(async () => { });
+http://192.168.43.202:3000/
+file:///storage/emulated/0/LaProvence.mp3
+var mytrack = {
+  id: 'myId',
+  url: " file:///storage/emulated/0/LaProvence.mp3",
+  title: 'myTitle',
+  artist: 'Huainian',
+  artwork: "file:///storage/emulated/0/1寸 小.png"
+}
+TrackPlayer.add(mytrack).then(() => {
+  TrackPlayer.play();
+})
 
 const containerWidth = Dimensions.get('window').width;
 const containerHeight = Dimensions.get('window').height * 1.064;

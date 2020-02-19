@@ -926,6 +926,11 @@
     "@types/yargs" "^15.0.0"
     chalk "^3.0.0"
 
+"@react-native-community/async-storage@^1.8.0":
+  version "1.8.0"
+  resolved "https://registry.npm.taobao.org/@react-native-community/async-storage/download/@react-native-community/async-storage-1.8.0.tgz#5f23ad486daa284398c71f2cc94d15fb7be40bb8"
+  integrity sha1-XyOtSG2qKEOYxx8syU0V+3vkC7g=
+
 "@react-native-community/blur@^3.4.1":
   version "3.4.1"
   resolved "https://registry.npm.taobao.org/@react-native-community/blur/download/@react-native-community/blur-3.4.1.tgz#dec04c7d60dd6a4fa7e3af3506feefec804728d0"
