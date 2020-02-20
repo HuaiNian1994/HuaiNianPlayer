@@ -1,6 +1,6 @@
 import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import MyStyle from '../style'
+import MyStyle from '../1stStage/style'
 import { View, Text, TextInput, TouchableWithoutFeedback, findNodeHandle, FlatList, PermissionsAndroid, Dimensions, PixelRatio, Image, ImageBackground, ScrollView, StyleSheet, StatusBar, AppRegistry } from 'react-native';
 export default class Mix extends React.Component {
 	constructor(props) {

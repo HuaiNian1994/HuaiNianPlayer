@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Text, TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import MyStyle from '../style'
-import Record from './Record'
-import Mix from './Mix'
+import MyStyle from '../1stStage/style'
+import Record from '../3rdStage/Record'
+import Mix from '../3rdStage/Mix'
 
 
 export default class Content extends React.Component {
