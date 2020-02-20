@@ -16,38 +16,37 @@ export default class AlignItemsBasics extends React.Component {
 		super(props)
 		this.state = {
 			fullscreenTarget: null,
-			// showNewMix:false
-			showNewMix: true
+			showNewMix: false,
+			lastPageIndex: null,//导航专用
 		}
-		// this._panResponder =null;
 	}
 	componentDidMount() {
-
 	}
 	changeNewMixState = () => {
-		this.setState({showNewMix:!this.state.showNewMix})
+		this.setState({ showNewMix: !this.state.showNewMix })
 	}
-	//立规则：自定义的属性全小写,以免与同名的变量混淆
-	render() {
+
+	render() {//立规则：自定义的属性全小写,以免与同名的变量混淆
 		const containerWidth = Dimensions.get('window').width;
 		const containerHeight = Dimensions.get('window').height * 1.064;
 		return (
-			<View style={{ width: "100%", height: "100%" ,zIndex:-999}}>
+			<View style={{ width: "100%", height: "100%", zIndex: -999 }}>
 				{/*高度固定区*/}
 				<ImageBackground source={require("./bg.jpg")} style={MyStyle.Container, { width: containerWidth, height: containerHeight }}>
 					<StatusBar translucent={true} backgroundColor="transparent"></StatusBar>
-
-					{/* <Nav menu="sort" title="Mine" ></Nav> */}
-					<Nav menu="arrow-back" title="Mix" ></Nav>
-					<Content></Content>
+					
+					<Nav menu="sort" title="Mine" ></Nav>
+					{/* <Nav menu="arrow-back" title="Mix" ></Nav> */}
+					<Content
+						changenewmixstate={this.changeNewMixState}
+					></Content>
 					<FootPlayer></FootPlayer>
-
 				</ImageBackground>
 
 
 				{/*内容弹出区*/}
 				<NewMix width={containerWidth} height={containerHeight} shownewmix={this.state.showNewMix} changenewmixstate={this.changeNewMixState}></NewMix>
-				
+
 			</View>
 		);
 	}

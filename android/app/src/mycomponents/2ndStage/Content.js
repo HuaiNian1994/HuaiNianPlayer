@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TextInput } from 'react-native';
+import { View, Text, TouchableWithoutFeedback, TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MyStyle from '../1stStage/style'
 import Record from '../3rdStage/Record'
@@ -20,7 +20,9 @@ export default class Content extends React.Component {
                 </View>
                 <View style={MyStyle.ContentMixes}>
                     <View style={MyStyle.ContentMixesBar}>
-                        <Icon name="add" size={20} color="#fff" style={MyStyle.ContentMixesBarAdd} />
+                        <TouchableWithoutFeedback onPress={()=>{this.props.changenewmixstate()}}>
+                            <Icon name="add" size={20} color="#fff" style={MyStyle.ContentMixesBarAdd} />
+                        </TouchableWithoutFeedback>
                         <Icon name="more-vert" size={20} color="#fff" style={MyStyle.ContentMixesBarMore} />
                         <Icon style={MyStyle.ContentMixesBarDropDown} name="expand-more" size={20} color="#fff" />
                         <Text style={MyStyle.ContentMixesBarTitle}>  Mix created<Text style={MyStyle.description}> (5)</Text></Text>

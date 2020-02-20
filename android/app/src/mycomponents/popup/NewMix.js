@@ -33,7 +33,7 @@ export default class NewMix extends React.Component {
                         color: "white",
                         borderBottomColor:"rgba(155,155,155,0.8)",
                         borderBottomWidth:1
-                    }}></TextInput>
+                    }} autoFocus={true}></TextInput>
                     <TouchableWithoutFeedback onPress={()=>{this.props.changenewmixstate()}}>
                         <Text  style={{
                         position: "absolute",
