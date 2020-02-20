@@ -8,9 +8,37 @@ import FootPlayer from './android/app/src/mycomponents/FootPlayer'
 import MyStyle from './android/app/src/style'
 //from 后跟的字符串不要有空格！！！坑得一B！！
 // import { BlurView } from "@react-native-community/blur";
-//不允许随系统设置缩放
+
+initApp();
+export default class AlignItemsBasics extends React.Component {
+	constructor(props) {
+		super(props)
+		this.state = {}
+		// this._panResponder =null;
+	}
+	componentDidMount() {
+
+	}
+	render() {
+		const containerWidth = Dimensions.get('window').width;
+		const containerHeight = Dimensions.get('window').height * 1.064;
+		return (
+			<ImageBackground source={require("./bg.jpg")} style={MyStyle.Container, { width: containerWidth, height: containerHeight }}>
+				<StatusBar translucent={true} backgroundColor="transparent"></StatusBar>
+				{/* <Nav menu="sort" title="Mine" ></Nav> */}
+				<Nav menu="arrow-back" title="Mix" ></Nav>
+				<Content></Content>
+				<FootPlayer></FootPlayer>
+			</ImageBackground>
+		);
+	}
+};
+
+
+
+function initApp() {
+	//不允许随系统设置缩放
 Text.defaultProps = Object.assign({}, Text.defaultProps, { allowFontScaling: false })
-const descriptionColor = "rgba(115,115,115,0.6)";
 async function requestStorageAccessPermission() {
 	try {
 		const answer = await PermissionsAndroid.request(
@@ -77,49 +105,6 @@ requestStorageAccessPermission();
 // }
 
 // console.log("got"+(async ()=>await asking())());
-const containerWidth = Dimensions.get('window').width;
-const containerHeight = Dimensions.get('window').height * 1.064;
-export default class AlignItemsBasics extends React.Component {
-	constructor(props) {
-		super(props)
-		this.state = {}
-		// this._panResponder =null;
-	}
-	componentDidMount() {
-
-	}
-	render() {
-		return (
-			<ImageBackground source={require("./bg.jpg")} style={MyStyle.Container, { width: containerWidth, height: containerHeight }}>
-				<StatusBar translucent={true} backgroundColor="transparent"></StatusBar>
-				{/* <Nav menu="sort" title="Mine" ></Nav> */}
-				<Nav menu="arrow-back" title="Mine" ></Nav>
-				<Content></Content>
-				<FootPlayer></FootPlayer>
-			</ImageBackground>
-		);
-	}
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

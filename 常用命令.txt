@@ -16,6 +16,7 @@ yarn add
 
 yarn remove
 
+react-native start --reset-cache
 
 @react-native-community/async-storage
 
