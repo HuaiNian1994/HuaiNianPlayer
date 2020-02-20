@@ -27,12 +27,9 @@ export default class Content extends React.Component {
                         <Icon style={MyStyle.ContentMixesBarDropDown} name="expand-more" size={20} color="#fff" />
                         <Text style={MyStyle.ContentMixesBarTitle}>  Mix created<Text style={MyStyle.description}> (5)</Text></Text>
                     </View>
-                    <Mix id={12}></Mix>
-                    <Mix></Mix>
-                    <Mix></Mix>
-                    <Mix></Mix>
-                    <Mix></Mix>
-                    <Mix></Mix>
+                    
+                    <Mix mixtitle="槐念喜欢的音乐" mixsubtitle="57songs" changemixstate={this.props.changemixstate}></Mix>
+                    
                 </View>
             </View>)
     }

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Mystyle from '../1stStage/style'
 import { View, Text,TouchableWithoutFeedback,TextInput } from 'react-native'
 export default class NewMix extends React.Component {
     constructor(props) {
@@ -7,17 +8,16 @@ export default class NewMix extends React.Component {
     render() {
         return this.props.shownewmix ? (
             <View style={{ position: "absolute", width: "100%", height: "100%", backgroundColor: " rgba(5,5,5,0.6)" }}>
-                <View style={{
+                <View style={[{
                     position: "absolute",
                     justifyContent:"center",
                     alignItems:"center",
-                    width: this.props.width * 0.87,
-                    height: this.props.height * 0.2865,
-                    backgroundColor: " rgb(40,64,80)",
+                    width: this.props.screenwidth * 0.87,
+                    height: this.props.screenheight * 0.2865,
                     borderRadius: 15,
                     top: "35.7%",//50-28.6/2
                     left: "6.5%"//50-87/2
-                }}>
+                },Mystyle.optionsBackground]}>
                     <Text style={{
                         position: "absolute",
                         left:"6.9%",
@@ -33,7 +33,11 @@ export default class NewMix extends React.Component {
                         color: "white",
                         borderBottomColor:"rgba(155,155,155,0.8)",
                         borderBottomWidth:1
-                    }} autoFocus={true}></TextInput>
+                    }} 
+                    autoFocus={true}
+                    placeholder="Type in mix title"
+                    placeholderTextColor="rgba(155,155,155,0.8)"
+                    ></TextInput>
                     <TouchableWithoutFeedback onPress={()=>{this.props.changenewmixstate()}}>
                         <Text  style={{
                         position: "absolute",

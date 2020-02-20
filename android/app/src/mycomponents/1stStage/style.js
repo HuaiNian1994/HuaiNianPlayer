@@ -1,10 +1,15 @@
 import {StyleSheet} from 'react-native'
 const descriptionColor = "rgba(115,115,115,0.6)";
 export  default StyleSheet.create({//不要使用变量接收！！！坑得一B
+	//***************************************公共********************************************
     description:{
         color:descriptionColor,
         fontSize: 12
     },
+	optionsBackground:{
+		backgroundColor:"rgb(40,64,80)"
+	},
+	//****************************************私有*******************************************
 	Container: {
 		position: "absolute",
 		display: "flex",

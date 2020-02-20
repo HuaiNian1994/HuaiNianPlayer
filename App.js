@@ -2,11 +2,12 @@
 import { View, Text, TextInput, TouchableWithoutFeedback, findNodeHandle, FlatList, PermissionsAndroid, Dimensions, PixelRatio, Image, ImageBackground, ScrollView, StyleSheet, StatusBar, AppRegistry } from 'react-native';
 import TrackPlayer from 'react-native-track-player';
 import { name as appName } from './app.json'; //唯一的入口名称
+import MyStyle from './android/app/src/mycomponents/1stStage/style'
 import Nav from './android/app/src/mycomponents/2ndStage/Nav'
 import Content from './android/app/src/mycomponents/2ndStage/Content'
 import FootPlayer from './android/app/src/mycomponents/2ndStage/FootPlayer'
-import MyStyle from './android/app/src/mycomponents/1stStage/style'
 import NewMix from './android/app/src/mycomponents/popup/NewMix'
+import NewMenu from './android/app/src/mycomponents/popup/NewMenu.js'
 //from 后跟的字符串不要有空格！！！坑得一B！！
 // import { BlurView } from "@react-native-community/blur";
 
@@ -17,13 +18,20 @@ export default class AlignItemsBasics extends React.Component {
 		this.state = {
 			fullscreenTarget: null,
 			showNewMix: false,
+			showMix:false,
 			lastPageIndex: null,//导航专用
+			mixTitle:null
 		}
 	}
 	componentDidMount() {
 	}
 	changeNewMixState = () => {
 		this.setState({ showNewMix: !this.state.showNewMix })
+	}
+	changeMixState = (title) => {
+		console.log("xixi");
+		
+		this.setState({ showMix: !this.state.showMix,mixTitle:title })
 	}
 
 	render() {//立规则：自定义的属性全小写,以免与同名的变量混淆
@@ -34,19 +42,19 @@ export default class AlignItemsBasics extends React.Component {
 				{/*高度固定区*/}
 				<ImageBackground source={require("./bg.jpg")} style={MyStyle.Container, { width: containerWidth, height: containerHeight }}>
 					<StatusBar translucent={true} backgroundColor="transparent"></StatusBar>
-					
 					<Nav menu="sort" title="Mine" ></Nav>
 					{/* <Nav menu="arrow-back" title="Mix" ></Nav> */}
 					<Content
+						changemixstate={this.changeMixState}
 						changenewmixstate={this.changeNewMixState}
+						screenheight={containerHeight}
+						screenwidth={containerWidth}
 					></Content>
 					<FootPlayer></FootPlayer>
 				</ImageBackground>
-
-
 				{/*内容弹出区*/}
-				<NewMix width={containerWidth} height={containerHeight} shownewmix={this.state.showNewMix} changenewmixstate={this.changeNewMixState}></NewMix>
-
+				<NewMix screenwidth={containerWidth} screenheight={containerHeight} shownewmix={this.state.showNewMix} changenewmixstate={this.changeNewMixState}></NewMix>
+				<NewMenu screenwidth={containerWidth} screenheight={containerHeight} showmix={this.state.showMix} mixtitle={this.state.mixTitle} changemixstate={this.changeMixState}></NewMenu>
 			</View>
 		);
 	}
