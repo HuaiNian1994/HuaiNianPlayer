@@ -4,6 +4,11 @@ import { View, Text,TouchableWithoutFeedback,TextInput } from 'react-native'
 export default class NewMix extends React.Component {
     constructor(props) {
         super(props)
+        this.state={newMixTitle:null}
+    }
+    inputHandler=(e)=>{
+        this.setState({newMixTitle:e})
+        //e.target.value
     }
     render() {
         return this.props.shownewmix ? (
@@ -37,6 +42,8 @@ export default class NewMix extends React.Component {
                     autoFocus={true}
                     placeholder="Type in mix title"
                     placeholderTextColor="rgba(155,155,155,0.8)"
+                    value={this.state.newMixTitle}
+                    onChangeText={(e)=>{this.inputHandler(e)}}
                     ></TextInput>
                     <TouchableWithoutFeedback onPress={()=>{this.props.changenewmixstate()}}>
                         <Text  style={{
@@ -47,7 +54,7 @@ export default class NewMix extends React.Component {
                         color: "white",
                     }}>CANCEL</Text>
                     </TouchableWithoutFeedback>
-                    <TouchableWithoutFeedback  >
+                    <TouchableWithoutFeedback  onPress={()=>{this.props.changenewmixstate(this.state.newMixTitle,"SUBMIT")}} >
                         <Text style={{
                         position: "absolute",
                         width:"17%",

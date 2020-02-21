@@ -12,28 +12,11 @@ import NewMenu from './android/app/src/mycomponents/popup/NewMenu.js'
 // import { BlurView } from "@react-native-community/blur";
 
 initApp();
+//规定：规定必须写在根组件页面
+//规定：二级组件必须以对象的形式传递根组件的处理函数，对象名为handlers
+//规定：buttonName的值与该button文本的实际值一致
+//规定：根组件是数据中心，子组件只能享用而不能自建动态数据
 export default class AlignItemsBasics extends React.Component {
-	constructor(props) {
-		super(props)
-		this.state = {
-			fullscreenTarget: null,
-			showNewMix: false,
-			showMix:false,
-			lastPageIndex: null,//导航专用
-			mixTitle:null
-		}
-	}
-	componentDidMount() {
-	}
-	changeNewMixState = () => {
-		this.setState({ showNewMix: !this.state.showNewMix })
-	}
-	changeMixState = (title) => {
-		console.log("xixi");
-		
-		this.setState({ showMix: !this.state.showMix,mixTitle:title })
-	}
-
 	render() {//立规则：自定义的属性全小写,以免与同名的变量混淆
 		const containerWidth = Dimensions.get('window').width;
 		const containerHeight = Dimensions.get('window').height * 1.064;
@@ -45,19 +28,65 @@ export default class AlignItemsBasics extends React.Component {
 					<Nav menu="sort" title="Mine" ></Nav>
 					{/* <Nav menu="arrow-back" title="Mix" ></Nav> */}
 					<Content
-						changemixstate={this.changeMixState}
-						changenewmixstate={this.changeNewMixState}
+						handlers={{
+							changenewmenuState: this.changeNewMenuState,
+							changenewmixstate: this.changeNewMixState,
+						}}
 						screenheight={containerHeight}
 						screenwidth={containerWidth}
+						mixlist={this.state.mixList}
 					></Content>
 					<FootPlayer></FootPlayer>
 				</ImageBackground>
 				{/*内容弹出区*/}
-				<NewMix screenwidth={containerWidth} screenheight={containerHeight} shownewmix={this.state.showNewMix} changenewmixstate={this.changeNewMixState}></NewMix>
-				<NewMenu screenwidth={containerWidth} screenheight={containerHeight} showmix={this.state.showMix} mixtitle={this.state.mixTitle} changemixstate={this.changeMixState}></NewMenu>
+				<NewMix 
+				screenwidth={containerWidth} 
+				screenheight={containerHeight} 
+				shownewmix={this.state.showNewMix} 
+				changenewmixstate={this.changeNewMixState}></NewMix>
+				<NewMenu 
+				screenwidth={containerWidth} 
+				screenheight={containerHeight} 
+				shownewmenu={this.state.showNewMenu} 
+				newmenutitle={this.state.newMenuTitle} 
+				changenewmenuState={this.changeNewMenuState}></NewMenu>
 			</View>
 		);
 	}
+	constructor(props) {
+		super(props)
+		this.state = {
+			fullscreenTarget: null,
+			showNewMix: false,
+			showNewMenu: false,
+			lastPageIndex: null,//导航专用
+			newMenuTitle: null,
+			mixList:[{mixtitle:"槐念喜欢的音乐",mixsubtitle:"57songs"}]
+		}
+	}
+	componentDidMount() {
+	}
+	//触发者：ContentMixesBar.add
+	//返回者：NewMix->cancel NewMix->submit
+	//传递路径1：APP->Content->ContentMixesBar.add
+	//传递路径2：APP->NewMix
+	changeNewMixState = (newMixTitle, buttonName) => {
+		if (newMixTitle != "" && buttonName == "SUBMIT") {
+			const info={mixtitle:newMixTitle,mixsubtitle:"57 Songs"}
+			this.state.mixList.push(info)
+			
+		}
+		this.setState({ showNewMix: !this.state.showNewMix })
+	}
+	//触发者：Mix.add
+	//返回者：NewMenu
+	//传递路径1：APP->Content->ContentMixes->Mix.more-vert
+	//传递路径2：APP->NewMenu
+	changeNewMenuState = (title) => {
+		console.log("xixi");
+		this.setState({ showNewMenu: !this.state.showNewMenu, newMenuTitle: title })
+	}
+	
 };
 
 

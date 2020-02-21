@@ -158,7 +158,7 @@ export  default StyleSheet.create({//不要使用变量接收！！！坑得一B
 	Mix: {
 		position: "relative",
 		width: "100%",
-		height: "10.2%",
+		// height: "10.2%",//无法将flatlist内的元素的高度设置为百分比
 		marginBottom: 5,
 		// backgroundColor: "rgba(88,8,88,0.8)"
 	},

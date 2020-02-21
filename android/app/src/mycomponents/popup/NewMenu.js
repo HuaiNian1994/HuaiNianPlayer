@@ -7,8 +7,8 @@ export default class NewMenu extends React.Component {
         super(props)
     }
     render() {
-        return this.props.showmix ? (
-            <TouchableWithoutFeedback onPress={()=>{this.props.changemixstate()}}>
+        return this.props.shownewmenu ? (
+            <TouchableWithoutFeedback onPress={()=>{this.props.changenewmenuState()}}>
                 <View style={{ position: "absolute", width: "100%", height: "100%", backgroundColor: " rgba(5,5,5,0.6)" }}>
                     <View style={[{
                         position: "absolute",
@@ -30,7 +30,7 @@ export default class NewMenu extends React.Component {
                                 height: "44%",
                                 color: "white",
                                 fontSize:17
-                            }}>Mix : {this.props.mixtitle}</Text>
+                            }}>Mix : {this.props.newmenutitle}</Text>
 
                         </View>
                         <FlatList
