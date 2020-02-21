@@ -9,9 +9,6 @@ import Mix from '../3rdStage/Mix'
 export default class Content extends React.Component {
     constructor(props) {
         super(props)
-        this.state={
-            changeNewMenuState:this.props.handlers.changenewmenuState,
-            }
     }
     render() {
         return (
@@ -32,7 +29,7 @@ export default class Content extends React.Component {
                     <FlatList
                        data={this.props.mixlist} 
                        renderItem={({item,index})=>{
-                           return <Mix screenheight={this.props.screenheight} mixtitle={item.mixtitle} mixsubtitle={item.mixsubtitle} changenewmenuState={this.state.changeNewMenuState}></Mix>}}
+                           return <Mix screenheight={this.props.screenheight} mixtitle={item.mixtitle} mixsubtitle={item.mixsubtitle} changenewmenustate={this.props.handlers.changenewmenustate}></Mix>}}
                          keyExtractor={(item, index) => index+""}
                           style={{ width: "100%",height:"100%"}}
                     >

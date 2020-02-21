@@ -15,7 +15,7 @@ export default class Mix extends React.Component {
 					<Text style={MyStyle.MixSubTitle}>{this.props.mixsubtitle}</Text>
 					
 					{/* menu */}
-					<TouchableWithoutFeedback onPress={()=>{this.props.changenewmenuState(this.props.mixtitle)}}>
+					<TouchableWithoutFeedback onPress={()=>{this.props.changenewmenustate(this.props.mixtitle)}}>
 						<Icon name="more-vert" style={MyStyle.MixMenu} size={20} color="#fff" />
 					</TouchableWithoutFeedback>
 

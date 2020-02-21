@@ -4,12 +4,9 @@ import { View, Text,TouchableWithoutFeedback,TextInput } from 'react-native'
 export default class NewMix extends React.Component {
     constructor(props) {
         super(props)
-        this.state={newMixTitle:null}
+        
     }
-    inputHandler=(e)=>{
-        this.setState({newMixTitle:e})
-        //e.target.value
-    }
+    
     render() {
         return this.props.shownewmix ? (
             <View style={{ position: "absolute", width: "100%", height: "100%", backgroundColor: " rgba(5,5,5,0.6)" }}>
@@ -42,10 +39,10 @@ export default class NewMix extends React.Component {
                     autoFocus={true}
                     placeholder="Type in mix title"
                     placeholderTextColor="rgba(155,155,155,0.8)"
-                    value={this.state.newMixTitle}
-                    onChangeText={(e)=>{this.inputHandler(e)}}
+                    value={this.props.newmixtitle}
+                    onChangeText={(e)=>{this.props.handlers.newmixmonitor(e)}}
                     ></TextInput>
-                    <TouchableWithoutFeedback onPress={()=>{this.props.changenewmixstate()}}>
+                    <TouchableWithoutFeedback onPress={()=>{this.props.handlers.changenewmixstate()}}>
                         <Text  style={{
                         position: "absolute",
                         width:"17%",                    
@@ -54,7 +51,7 @@ export default class NewMix extends React.Component {
                         color: "white",
                     }}>CANCEL</Text>
                     </TouchableWithoutFeedback>
-                    <TouchableWithoutFeedback  onPress={()=>{this.props.changenewmixstate(this.state.newMixTitle,"SUBMIT")}} >
+                    <TouchableWithoutFeedback  onPress={()=>{this.props.handlers.changenewmixstate(this.props.newmixtitle,"SUBMIT")}} >
                         <Text style={{
                         position: "absolute",
                         width:"17%",

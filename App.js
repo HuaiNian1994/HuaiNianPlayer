@@ -22,34 +22,44 @@ export default class AlignItemsBasics extends React.Component {
 		const containerHeight = Dimensions.get('window').height * 1.064;
 		return (
 			<View style={{ width: "100%", height: "100%", zIndex: -999 }}>
-				{/*高度固定区*/}
+				{/*高度固定区，未来的pageNavigation区域*/}
 				<ImageBackground source={require("./bg.jpg")} style={MyStyle.Container, { width: containerWidth, height: containerHeight }}>
 					<StatusBar translucent={true} backgroundColor="transparent"></StatusBar>
 					<Nav menu="sort" title="Mine" ></Nav>
 					{/* <Nav menu="arrow-back" title="Mix" ></Nav> */}
 					<Content
 						handlers={{
-							changenewmenuState: this.changeNewMenuState,
+							changenewmenustate: this.changeNewMenuState,
 							changenewmixstate: this.changeNewMixState,
 						}}
 						screenheight={containerHeight}
 						screenwidth={containerWidth}
 						mixlist={this.state.mixList}
+						newmixtitle={this.state.newMixTitle}
 					></Content>
 					<FootPlayer></FootPlayer>
 				</ImageBackground>
 				{/*内容弹出区*/}
-				<NewMix 
-				screenwidth={containerWidth} 
-				screenheight={containerHeight} 
-				shownewmix={this.state.showNewMix} 
-				changenewmixstate={this.changeNewMixState}></NewMix>
-				<NewMenu 
-				screenwidth={containerWidth} 
-				screenheight={containerHeight} 
-				shownewmenu={this.state.showNewMenu} 
-				newmenutitle={this.state.newMenuTitle} 
-				changenewmenuState={this.changeNewMenuState}></NewMenu>
+				<NewMix
+					screenwidth={containerWidth}
+					screenheight={containerHeight}
+					shownewmix={this.state.showNewMix}
+					newmixtitle={this.state.newMixTitle}
+					handlers={{
+						changenewmixstate: this.changeNewMixState,
+						newmixmonitor: this.newMixMonitor
+					}}
+				></NewMix>
+				<NewMenu
+					screenwidth={containerWidth}
+					screenheight={containerHeight}
+					shownewmenu={this.state.showNewMenu}
+					newmenutitle={this.state.newMenuTitle}
+					handlers={{
+						changenewmenustate: this.changeNewMenuState,
+						deletemix: this.deleteMix
+					}}
+				></NewMenu>
 			</View>
 		);
 	}
@@ -61,7 +71,8 @@ export default class AlignItemsBasics extends React.Component {
 			showNewMenu: false,
 			lastPageIndex: null,//导航专用
 			newMenuTitle: null,
-			mixList:[{mixtitle:"槐念喜欢的音乐",mixsubtitle:"57songs"}]
+			mixList: [{ mixtitle: "槐念喜欢的音乐", mixsubtitle: "57songs" }],
+			newMixTitle: null,
 		}
 	}
 	componentDidMount() {
@@ -72,21 +83,43 @@ export default class AlignItemsBasics extends React.Component {
 	//传递路径2：APP->NewMix
 	changeNewMixState = (newMixTitle, buttonName) => {
 		if (newMixTitle != "" && buttonName == "SUBMIT") {
-			const info={mixtitle:newMixTitle,mixsubtitle:"57 Songs"}
+			const info = { mixtitle: newMixTitle, mixsubtitle: "57 Songs" }
 			this.state.mixList.push(info)
-			
+			this.setState({ newMixTitle: null, mixList: this.state.mixList })
 		}
 		this.setState({ showNewMix: !this.state.showNewMix })
+	}
+	newMixMonitor = (e) => {
+		this.setState({ newMixTitle: e })
+		//e.target.value
 	}
 	//触发者：Mix.add
 	//返回者：NewMenu
 	//传递路径1：APP->Content->ContentMixes->Mix.more-vert
 	//传递路径2：APP->NewMenu
 	changeNewMenuState = (title) => {
-		console.log("xixi");
 		this.setState({ showNewMenu: !this.state.showNewMenu, newMenuTitle: title })
+		return;
 	}
-	
+	deleteMix = (title) => {
+		for (let i = 0; i < this.state.mixList.length; i++) {
+			if (this.state.mixList[i].mixtitle == title) {
+				if (this.state.mixList[i].mixtitle != "槐念喜欢的音乐") {
+					this.state.mixList.splice(i, 1)
+				}
+				this.changeNewMenuState()
+				// this.state.mixList.pop()
+				break;
+			}
+		}
+	}
+	editMix = () => {
+
+	}
+	shareMix = () => {
+		//待续
+	}
+
 };
 
 
