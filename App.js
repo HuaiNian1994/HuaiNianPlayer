@@ -35,7 +35,7 @@ export default class AlignItemsBasics extends React.Component {
 						screenheight={containerHeight}
 						screenwidth={containerWidth}
 						mixlist={this.state.mixList}
-						newmixtitle={this.state.newMixTitle}
+						newmixcomponent_title={this.state.NewMixComponent_title}
 					></Content>
 					<FootPlayer></FootPlayer>
 				</ImageBackground>
@@ -44,10 +44,13 @@ export default class AlignItemsBasics extends React.Component {
 					screenwidth={containerWidth}
 					screenheight={containerHeight}
 					shownewmix={this.state.showNewMix}
-					newmixtitle={this.state.newMixTitle}
+					newmixcomponent_input={this.state.NewMixComponent_input}
+					newmixcomponent_title={this.state.NewMixComponent_title}
+					mixlist={this.state.mixList}
 					handlers={{
 						changenewmixstate: this.changeNewMixState,
-						newmixmonitor: this.newMixMonitor
+						newmixmonitor: this.newMixMonitor,
+						editmix: this.editMix,
 					}}
 				></NewMix>
 				<NewMenu
@@ -57,7 +60,9 @@ export default class AlignItemsBasics extends React.Component {
 					newmenutitle={this.state.newMenuTitle}
 					handlers={{
 						changenewmenustate: this.changeNewMenuState,
-						deletemix: this.deleteMix
+						deletemix: this.deleteMix,
+						editmix: this.editMix,
+						sharemix: this.shareMix
 					}}
 				></NewMenu>
 			</View>
@@ -66,54 +71,106 @@ export default class AlignItemsBasics extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			fullscreenTarget: null,
-			showNewMix: false,
+			// for navigation
+			lastPageIndex: null,
+			//openning a NewNenu
 			showNewMenu: false,
-			lastPageIndex: null,//导航专用
 			newMenuTitle: null,
-			mixList: [{ mixtitle: "槐念喜欢的音乐", mixsubtitle: "57songs" }],
-			newMixTitle: null,
+			//create a Mix && render mixlist 
+			showNewMix: { show: false, purpose: "addMix" },//propose取值：addMix，editMix
+			mixList: [{ mixtitle: "槐念喜欢的音乐", mixsubtitle: "57songs", id: 0 }],
+
+			NewMixComponent_input: null,
+			//edit a Mix
+			NewMixComponent_title: null,
+			editingMixIndex: null,
+
 		}
 	}
 	componentDidMount() {
 	}
-	//触发者：ContentMixesBar.add
-	//返回者：NewMix->cancel NewMix->submit
+	//业务触发者：ContentMixesBar.add
+	//业务返回者：NewMix.cancel && NewMix.submit
 	//传递路径1：APP->Content->ContentMixesBar.add
 	//传递路径2：APP->NewMix
-	changeNewMixState = (newMixTitle, buttonName) => {
-		if (newMixTitle != "" && buttonName == "SUBMIT") {
-			const info = { mixtitle: newMixTitle, mixsubtitle: "57 Songs" }
+	changeNewMixState = (params) => {
+		if (params && params.newTitle != "" && params.action == "SUBMIT") {
+			const info = { mixtitle: params.newTitle, mixsubtitle: "57 Songs", id: this.state.mixList.length }
 			this.state.mixList.push(info)
-			this.setState({ newMixTitle: null, mixList: this.state.mixList })
+			this.setState({ NewMixComponent_input: null, mixList: this.state.mixList })
 		}
-		this.setState({ showNewMix: !this.state.showNewMix })
+		if (params && params.purpose) {
+			console.log("更改了newmix标题：" + params.purpose);
+
+			this.setState({ NewMixComponent_title: params.purpose })
+		}
+		this.setState({
+			showNewMix: {
+				show: !this.state.showNewMix.show,
+				purpose: this.state.showNewMix.purpose
+			}
+		})
 	}
 	newMixMonitor = (e) => {
-		this.setState({ newMixTitle: e })
-		//e.target.value
+
+		this.setState({ NewMixComponent_input: e })
+
 	}
-	//触发者：Mix.add
-	//返回者：NewMenu
+
+	//业务触发者：Mix.more-vert
+	//业务返回者：NewMenu
 	//传递路径1：APP->Content->ContentMixes->Mix.more-vert
 	//传递路径2：APP->NewMenu
 	changeNewMenuState = (title) => {
 		this.setState({ showNewMenu: !this.state.showNewMenu, newMenuTitle: title })
-		return;
 	}
+	//业务触发者：NewMenu.delete
+	//业务返回者：NewMenu
+	//传递路径1：APP->NewMenu.delete
 	deleteMix = (title) => {
 		for (let i = 0; i < this.state.mixList.length; i++) {
 			if (this.state.mixList[i].mixtitle == title) {
 				if (this.state.mixList[i].mixtitle != "槐念喜欢的音乐") {
 					this.state.mixList.splice(i, 1)
+					for (let j = i; j < this.state.mixList.length; j++) {//修正下方mix的id
+						this.state.mixList[j].id = j;
+					}
 				}
 				this.changeNewMenuState()
-				// this.state.mixList.pop()
 				break;
 			}
 		}
 	}
-	editMix = () => {
+	//业务触发者：NewMenu.edit
+	//业务返回者：NewMix.submit && NewMix.cancel
+	//传递路径1：APP->NewMenu.edit
+	//传递路径2：APP->NewMix
+	editMix = (params) => {//arr.purpose arr.whichMix
+		//1、总是执行：改变newmix窗口状态
+		this.setState({
+			showNewMix: {
+				show: !this.state.showNewMix.show,
+				purpose: this.state.showNewMix.purpose
+			}
+		})
+		//2.触发时：
+		if (params.purpose == "Edit") {
+			this.changeNewMenuState()
+			this.setState({
+				NewMixComponent_input: params.whichMix,
+				NewMixComponent_title: params.purpose
+			})
+			for (let i = 0; i < this.state.mixList.length; i++) {//把正在edit的mix的index找出来
+				if (this.state.mixList[i].mixtitle == params.whichMix) {
+					this.setState({ editingMixIndex: i });
+					break;
+				}
+			}
+		}
+		//3.返回时：
+		if (params.action == "SUBMIT") {//为指定index的mix赋值
+			this.state.mixList[this.state.editingMixIndex].mixtitle = params.submitContent
+		}
 
 	}
 	shareMix = () => {

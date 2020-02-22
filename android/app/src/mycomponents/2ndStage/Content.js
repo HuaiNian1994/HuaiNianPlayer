@@ -19,7 +19,7 @@ export default class Content extends React.Component {
                 </View>
                 <View style={MyStyle.ContentMixes}>
                     <View style={MyStyle.ContentMixesBar}>
-                        <TouchableWithoutFeedback onPress={()=>{this.props.handlers.changenewmixstate()}}>
+                        <TouchableWithoutFeedback onPress={()=>{this.props.handlers.changenewmixstate({purpose:"New Mix"})}}>
                             <Icon name="add" size={20} color="#fff" style={MyStyle.ContentMixesBarAdd} />
                         </TouchableWithoutFeedback>
                         <Icon name="more-vert" size={20} color="#fff" style={MyStyle.ContentMixesBarMore} />
@@ -30,7 +30,7 @@ export default class Content extends React.Component {
                        data={this.props.mixlist} 
                        renderItem={({item,index})=>{
                            return <Mix screenheight={this.props.screenheight} mixtitle={item.mixtitle} mixsubtitle={item.mixsubtitle} changenewmenustate={this.props.handlers.changenewmenustate}></Mix>}}
-                         keyExtractor={(item, index) => index+""}
+                         keyExtractor={(item, index) => item.id+""}
                           style={{ width: "100%",height:"100%"}}
                     >
 

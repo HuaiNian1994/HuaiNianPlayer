@@ -36,22 +36,22 @@ export default class NewMenu extends React.Component {
                         <FlatList
                             data={titles}
                             renderItem={({ item, index }) => {//注意：此处接收的是对象，坑得一B！！！！故item和index不得改名，坑得一B！！！！
-                                let NewMenuItemHander = () => {};
-                                let param=null;
+                                let NewMenuItemHander = () => { };
+                                let param = this.props.newmenutitle;//哪个专辑
                                 //"Share", "Edit Mix", "Delete"
                                 switch (item) {
                                     case "Share":
-
+                                        NewMenuItemHander = this.props.handlers.sharemix;
                                         break;
                                     case "Edit Mix":
-
+                                        NewMenuItemHander = this.props.handlers.editmix;
+                                        param={purpose:"Edit",whichMix:this.props.newmenutitle}
                                         break;
                                     case "Delete":
-                                       NewMenuItemHander=this.props.handlers.deletemix;
-                                       param=this.props.newmenutitle;
+                                        NewMenuItemHander = this.props.handlers.deletemix;
                                         break;
                                 }
-                                return (<TouchableOpacity onPress={()=>{NewMenuItemHander(param)}}>
+                                return (<TouchableOpacity onPress={() => { NewMenuItemHander(param) }}>
                                     <MenuItem screenheight={this.props.screenheight} name={names[index]} title={item} ></MenuItem>
                                 </TouchableOpacity>)
                             }}
