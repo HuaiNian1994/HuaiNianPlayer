@@ -1,14 +1,14 @@
 import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MyStyle from '../1stStage/style'
-import { View, Text, TextInput, TouchableWithoutFeedback, findNodeHandle, FlatList, PermissionsAndroid, Dimensions, PixelRatio, Image, ImageBackground, ScrollView, StyleSheet, StatusBar, AppRegistry } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, findNodeHandle, FlatList, PermissionsAndroid, Dimensions, PixelRatio, Image, ImageBackground, ScrollView, StyleSheet, StatusBar, AppRegistry } from 'react-native';
 export default class Mix extends React.Component {
 	constructor(props) {
 		super(props)
 	}
 	render() {
 		return (
-			<TouchableWithoutFeedback >
+			<TouchableOpacity onPress={()=>{this.props.globalnavigator("Mix Details")}}>
 				<View style={[MyStyle.Mix,{height:this.props.screenheight*0.0694}]}>
 					<View style={MyStyle.MixCover}><Image style={{ width: "100%", height: "100%", position: "absolute", borderRadius: 10, opacity: 0.3 }} source={{ uri: "file:///storage/emulated/0/shunza.jpg" }}></Image><Icon style={{ fontWeight: "100" }} name="favorite-border" size={33} color="#fff" /></View>
 					<Text style={MyStyle.MixTitle}>{this.props.mixtitle}</Text>
@@ -20,7 +20,7 @@ export default class Mix extends React.Component {
 					</TouchableWithoutFeedback>
 
 				</View>
-			</TouchableWithoutFeedback>
+			</TouchableOpacity>
 		)
 	}
 }

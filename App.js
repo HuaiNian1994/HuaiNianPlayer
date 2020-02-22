@@ -5,6 +5,7 @@ import { name as appName } from './app.json'; //唯一的入口名称
 import MyStyle from './android/app/src/mycomponents/1stStage/style'
 import Nav from './android/app/src/mycomponents/2ndStage/Nav'
 import Content from './android/app/src/mycomponents/2ndStage/Content'
+import MixDetails from './android/app/src/mycomponents/2ndStage/MixDetails'
 import FootPlayer from './android/app/src/mycomponents/2ndStage/FootPlayer'
 import NewMix from './android/app/src/mycomponents/popup/NewMix'
 import NewMenu from './android/app/src/mycomponents/popup/NewMenu.js'
@@ -25,20 +26,45 @@ export default class AlignItemsBasics extends React.Component {
 				{/*高度固定区，未来的pageNavigation区域*/}
 				<ImageBackground source={require("./bg.jpg")} style={MyStyle.Container, { width: containerWidth, height: containerHeight }}>
 					<StatusBar translucent={true} backgroundColor="transparent"></StatusBar>
-					<Nav menu="sort" title="Mine" ></Nav>
-					{/* <Nav menu="arrow-back" title="Mix" ></Nav> */}
-					<Content
-						handlers={{
-							changenewmenustate: this.changeNewMenuState,
-							changenewmixstate: this.changeNewMixState,
-						}}
-						screenheight={containerHeight}
-						screenwidth={containerWidth}
-						mixlist={this.state.mixList}
-						newmixcomponent_title={this.state.NewMixComponent_title}
-					></Content>
+					{this.state.nowPage == "Main" && (
+						<View style={{ width: "100%", height: "100%" }}>
+							<Nav menu="sort" title="Mine" ></Nav>
+							<Content
+								handlers={{
+									changenewmenustate: this.changeNewMenuState,
+									changenewmixstate: this.changeNewMixState,
+									globalnavigator: this.globalNavigator
+								}}
+								screenheight={containerHeight}
+								screenwidth={containerWidth}
+								mixlist={this.state.mixList}
+								newmixcomponent_title={this.state.NewMixComponent_title}
+							></Content>
+						</View>
+					)}
+					{this.state.nowPage == "Mix Details" && (
+						<View style={{ width: "100%", height: "100%" }}>
+							<Nav menu="arrow-back" title="Mix"
+								handlers={{
+									globalnavigator: this.globalNavigator
+								}}></Nav>
+							<MixDetails
+								handlers={{
+									changenewmenustate: this.changeNewMenuState,
+									changenewmixstate: this.changeNewMixState,
+									globalnavigator: this.globalNavigator
+								}}
+								screenheight={containerHeight}
+								screenwidth={containerWidth}
+								mixlist={this.state.mixList}
+								newmixcomponent_title={this.state.NewMixComponent_title}
+							></MixDetails>
+						</View>
+					)}
 					<FootPlayer></FootPlayer>
 				</ImageBackground>
+
+
 				{/*内容弹出区*/}
 				<NewMix
 					screenwidth={containerWidth}
@@ -72,14 +98,14 @@ export default class AlignItemsBasics extends React.Component {
 		super(props)
 		this.state = {
 			// for navigation
-			lastPageIndex: null,
+			nowPage: "Main",
+			historyStack: ["Main"],
 			//openning a NewNenu
 			showNewMenu: false,
 			newMenuTitle: null,
 			//create a Mix && render mixlist 
 			showNewMix: { show: false, purpose: "addMix" },//propose取值：addMix，editMix
 			mixList: [{ mixtitle: "槐念喜欢的音乐", mixsubtitle: "57songs", id: 0 }],
-
 			NewMixComponent_input: null,
 			//edit a Mix
 			NewMixComponent_title: null,
@@ -88,6 +114,17 @@ export default class AlignItemsBasics extends React.Component {
 		}
 	}
 	componentDidMount() {
+	}
+	globalNavigator = (pageName) => {
+		if (pageName == "Back") {
+			if (this.state.historyStack.length != 1) {
+				this.state.historyStack.pop()
+			}
+			this.setState({ nowPage: this.state.historyStack[this.state.historyStack.length - 1] })
+		} else {
+			this.setState({ nowPage: pageName })
+			this.state.historyStack.push(pageName);
+		}
 	}
 	//业务触发者：ContentMixesBar.add
 	//业务返回者：NewMix.cancel && NewMix.submit

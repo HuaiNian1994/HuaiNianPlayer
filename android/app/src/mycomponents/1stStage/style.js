@@ -1,13 +1,13 @@
-import {StyleSheet} from 'react-native'
+import { StyleSheet } from 'react-native'
 const descriptionColor = "rgba(115,115,115,0.6)";
-export  default StyleSheet.create({//不要使用变量接收！！！坑得一B
+export default StyleSheet.create({//不要使用变量接收！！！坑得一B
 	//***************************************公共********************************************
-    description:{
-        color:descriptionColor,
-        fontSize: 12
-    },
-	optionsBackground:{
-		backgroundColor:"rgb(40,64,80)"
+	description: {
+		color: descriptionColor,
+		fontSize: 12
+	},
+	optionsBackground: {
+		backgroundColor: "rgb(40,64,80)"
 	},
 	//****************************************私有*******************************************
 	Container: {
@@ -19,7 +19,6 @@ export  default StyleSheet.create({//不要使用变量接收！！！坑得一B
 		alignItems: "stretch",
 		backgroundColor: "blue",
 		top: 0
-
 	},
 	Nav: {
 		height: "11%",//不要把数值写成字符串，否则应用崩溃
@@ -27,8 +26,6 @@ export  default StyleSheet.create({//不要使用变量接收！！！坑得一B
 		backgroundColor: "rgba(155,155,155,0.4)",
 		display: "flex",
 		position: "absolute"
-
-
 	},
 	Blur: {
 		height: "11%",//不要把数值写成字符串，否则应用崩溃
@@ -36,8 +33,6 @@ export  default StyleSheet.create({//不要使用变量接收！！！坑得一B
 		// backgroundColor: "red",
 		display: "flex",
 		position: "absolute"
-
-
 	},
 	NavContent: {
 		position: "absolute",
@@ -56,7 +51,7 @@ export  default StyleSheet.create({//不要使用变量接收！！！坑得一B
 		// width: "4.8%",
 		// height: "21.8%",
 		left: "4.2%",
-		bottom: "14.8%",//50-21.8/2
+		bottom: "11.8%",//50-21.8/2
 		// borderRadius: 999
 	},
 	NavTitle: {
@@ -65,7 +60,7 @@ export  default StyleSheet.create({//不要使用变量接收！！！坑得一B
 		height: "42%",
 		color: "white",
 		fontSize: 18,
-		left: "22%",
+		left: "5%",
 		bottom: 0,//50-21.8/2
 		borderBottomColor: "rgba(155,155,155,0.9)",
 		// borderRadius: 999
@@ -76,7 +71,7 @@ export  default StyleSheet.create({//不要使用变量接收！！！坑得一B
 		// width: "4.8%",
 		// height: "21.8%",
 		right: "4.8%",
-		bottom: "14.8%",//50-21.8/2
+		bottom: "11.8%",//50-21.8/2
 		// borderRadius: 999
 	},
 	Content: {
@@ -120,7 +115,7 @@ export  default StyleSheet.create({//不要使用变量接收！！！坑得一B
 
 	ContentMixes: {
 		width: "100%",
-		height: "84%",
+		height: "81.1%",
 		backgroundColor: "rgba(100,100,100,0.1)",
 	},
 	ContentMixesBar: {
@@ -261,7 +256,64 @@ export  default StyleSheet.create({//不要使用变量接收！！！坑得一B
 		// width: "5.6%",
 		// height: "41.1%",
 		// backgroundColor: "rgba(88,88,118,0.8)"
-	}
-
+	},
+	MixDetails: {
+		position: "relative",
+		top: "11%",
+		height: "82.3%",//100-11-6.75
+		width: "100%",
+		// backgroundColor:"red"
+	},
+	MixItem: {
+		position: "relative",
+		width: "100%",
+		// height: "10.2%",//无法将flatlist内的元素的高度设置为百分比
+		marginBottom: 5,
+		// backgroundColor: "rgba(88,8,88,0.8)"
+	},
+	MixItemIndex: {
+		position: "absolute",
+		display: "flex",
+		justifyContent: "center",
+		alignItems: "center",
+		width: "13.88%",
+		height: "100%",
+		left: 0,
+	},
+	MixItemTitle: {
+		position: "absolute",
+		fontSize: 14,
+		width: "86.1%",//100-13.88
+		// height: "28%",
+		right: 0,
+		top: "14.7%",
+		color: "white"
+		// backgroundColor: "rgba(188,8,88,0.8)"
+	},
+	MixItemSubTitle: {
+		position: "absolute",
+		justifyContent:"center",
+		fontSize: 8,
+		width: "86.1%",
+		// height: "16%",
+		right: 0,
+		top: "66.7%",
+		// color: "rgb(165,165,165)",
+		// backgroundColor: "rgba(188,8,88,0.8)"
+	},
+	MixItemMenu: {
+		position: "absolute",
+		right: "4.4%",
+		top: "30%",
+		// backgroundColor: "rgba(188,8,188,0.8)"
+	},
+	MixItemSum: {
+		position: "absolute",
+		width: "78%",
+		height: "21%",
+		right: 0,
+		top: "65%",
+		backgroundColor: "rgba(188,8,88,0.8)"
+	},
 
 })

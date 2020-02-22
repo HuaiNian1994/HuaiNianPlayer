@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList,TouchableWithoutFeedback, TextInput } from 'react-native';
+import { View, Text, FlatList, TouchableWithoutFeedback, TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MyStyle from '../1stStage/style'
 import Record from '../3rdStage/Record'
@@ -19,7 +19,7 @@ export default class Content extends React.Component {
                 </View>
                 <View style={MyStyle.ContentMixes}>
                     <View style={MyStyle.ContentMixesBar}>
-                        <TouchableWithoutFeedback onPress={()=>{this.props.handlers.changenewmixstate({purpose:"New Mix"})}}>
+                        <TouchableWithoutFeedback onPress={() => { this.props.handlers.changenewmixstate({ purpose: "New Mix" }) }}>
                             <Icon name="add" size={20} color="#fff" style={MyStyle.ContentMixesBarAdd} />
                         </TouchableWithoutFeedback>
                         <Icon name="more-vert" size={20} color="#fff" style={MyStyle.ContentMixesBarMore} />
@@ -27,18 +27,25 @@ export default class Content extends React.Component {
                         <Text style={MyStyle.ContentMixesBarTitle}>  Mix created<Text style={MyStyle.description}> (5)</Text></Text>
                     </View>
                     <FlatList
-                       data={this.props.mixlist} 
-                       renderItem={({item,index})=>{
-                           return <Mix screenheight={this.props.screenheight} mixtitle={item.mixtitle} mixsubtitle={item.mixsubtitle} changenewmenustate={this.props.handlers.changenewmenustate}></Mix>}}
-                         keyExtractor={(item, index) => item.id+""}
-                          style={{ width: "100%",height:"100%"}}
+                        data={this.props.mixlist}
+                        renderItem={({ item, index }) => {
+                            return <Mix
+                                screenheight={this.props.screenheight}
+                                mixtitle={item.mixtitle}
+                                mixsubtitle={item.mixsubtitle}
+                                globalnavigator={this.props.handlers.globalnavigator}
+                                changenewmenustate={this.props.handlers.changenewmenustate}>
+                            </Mix>
+                        }}
+                        keyExtractor={(item, index) => item.id + ""}
+                        style={{ width: "100%", height: "100%" }}
                     >
 
                     </FlatList>
                     {/* <Mix></Mix> */}
-                    
+
                     {/* <Mix mixtitle="槐念喜欢的音乐" mixsubtitle="57songs" changenewmenuState={this.state. changeNewMenuState}></Mix> */}
-                    
+
                 </View>
             </View>)
     }
