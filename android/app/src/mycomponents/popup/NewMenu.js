@@ -30,11 +30,11 @@ export default class NewMenu extends React.Component {
                                 height: "44%",
                                 color: "white",
                                 fontSize: 17
-                            }}>Mix : {this.props.newmenutitle}</Text>
+                            }}>{this.props.activemixid===null?"Mix :":"Track :"} {this.props.newmenutitle}</Text>
 
                         </View>
                         <FlatList
-                            data={titles}
+                            data={this.props.newmenuitemscontent.titles}
                             renderItem={({ item, index }) => {//注意：此处接收的是对象，坑得一B！！！！故item和index不得改名，坑得一B！！！！
                                 let NewMenuItemHander = () => { };
                                 let param = this.props.newmenutitle;//哪个专辑
@@ -52,7 +52,7 @@ export default class NewMenu extends React.Component {
                                         break;
                                 }
                                 return (<TouchableOpacity onPress={() => { NewMenuItemHander(param) }}>
-                                    <MenuItem screenheight={this.props.screenheight} name={names[index]} title={item} ></MenuItem>
+                                    <MenuItem screenheight={this.props.screenheight} name={this.props.newmenuitemscontent.names[index]} title={item} ></MenuItem>
                                 </TouchableOpacity>)
                             }}
                             keyExtractor={(item, index) => item}
@@ -68,8 +68,7 @@ export default class NewMenu extends React.Component {
         ) : null;
     }
 }
-const titles = ["Share", "Edit Mix", "Delete"];
-const names = ["launch", "brush", "delete"]
+
 // class MyTouchableWithoutFeedback extends React.Component {
 //     constructor(props) {
 //         super(props)

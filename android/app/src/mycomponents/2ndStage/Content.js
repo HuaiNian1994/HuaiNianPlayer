@@ -34,8 +34,9 @@ export default class Content extends React.Component {
                                 mixtitle={item.mixtitle}
                                 mixsubtitle={item.mixsubtitle}
                                 globalnavigator={this.props.handlers.globalnavigator}
-                                changenewmenustate={this.props.handlers.changenewmenustate}>
-                            </Mix>
+                                changenewmenustate={this.props.handlers.changenewmenustate}
+                                id={item.id}
+                            ></Mix>
                         }}
                         keyExtractor={(item, index) => item.id + ""}
                         style={{ width: "100%", height: "100%" }}

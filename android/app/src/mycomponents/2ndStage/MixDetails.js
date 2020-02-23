@@ -14,19 +14,20 @@ export default class MixDetails extends React.Component {
         return (
             <View style={MyStyle.MixDetails}>
                 <FlatList
-                    data={this.props.mixlist}
+                    data={this.props.activemix.tracks}
                     renderItem={({ item, index }) => {
                         return <MixItem
                             screenheight={this.props.screenheight}
-                            mixtitle={item.mixtitle}
-                            mixsubtitle={item.mixsubtitle}
+                            tracktitle={item.trackTitle}
+                            tracksubtitle={item.trackSubTitle}
+                            artist={item.artist}
+                            url={item.url}
                             globalnavigator={this.props.handlers.globalnavigator}
                             changenewmenustate={this.props.handlers.changenewmenustate}
-                            id={item.id}
+                            id={item.trackId}
                         ></MixItem>
                     }}
-                    
-                    keyExtractor={(item, index) => item.id + ""}
+                    keyExtractor={(item, index) => item.trackId + ""}
                     style={{ width: "100%", height: "100%" }}
                     ListHeaderComponent={PlayAll}
                 >

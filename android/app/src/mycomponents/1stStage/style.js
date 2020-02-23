@@ -282,7 +282,7 @@ export default StyleSheet.create({//不要使用变量接收！！！坑得一B
 	},
 	MixItemTitle: {
 		position: "absolute",
-		fontSize: 14,
+		fontSize: 16,
 		width: "86.1%",//100-13.88
 		// height: "28%",
 		right: 0,
