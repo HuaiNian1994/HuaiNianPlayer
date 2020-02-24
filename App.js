@@ -1,6 +1,6 @@
 ﻿import React, { Component } from 'react';
 import { View, Text, TextInput, TouchableWithoutFeedback, findNodeHandle, FlatList, PermissionsAndroid, Dimensions, PixelRatio, Image, ImageBackground, ScrollView, StyleSheet, StatusBar, AppRegistry } from 'react-native';
-import TrackPlayer from 'react-native-track-player';
+import TrackPlayer, { STATE_PLAYING, STATE_PAUSED } from 'react-native-track-player';
 import { name as appName } from './app.json'; //唯一的入口名称
 import MyStyle from './android/app/src/mycomponents/1stStage/style'
 import Nav from './android/app/src/mycomponents/2ndStage/Nav'
@@ -52,7 +52,8 @@ export default class AlignItemsBasics extends React.Component {
 								handlers={{
 									changenewmenustate: this.changeNewMenuState,
 									changenewmixstate: this.changeNewMixState,
-									globalnavigator: this.globalNavigator
+									globalnavigator: this.globalNavigator,
+									changeplaystate: this.changePlayState
 								}}
 								screenheight={containerHeight}
 								screenwidth={containerWidth}
@@ -61,7 +62,11 @@ export default class AlignItemsBasics extends React.Component {
 							></MixDetails>
 						</View>
 					)}
-					<FootPlayer></FootPlayer>
+					<FootPlayer
+						playstate={this.state.playState}
+						handlers={{
+							changeplaystate: this.changePlayState,
+						}}></FootPlayer>
 				</ImageBackground>
 
 
@@ -98,6 +103,8 @@ export default class AlignItemsBasics extends React.Component {
 	}
 	constructor(props) {
 		super(props)
+
+
 		this.state = {
 			// for navigation
 			nowPage: "Main",
@@ -114,7 +121,7 @@ export default class AlignItemsBasics extends React.Component {
 				id: 0,
 				cover: "",
 				tracks: [{
-					url:"",
+					url: "",
 					trackTitle: "传奇",
 					trackTitleDisc: "",
 					trackSubTitle: "王菲-传奇",
@@ -129,15 +136,37 @@ export default class AlignItemsBasics extends React.Component {
 
 
 			//opening a Mix
-			activeMixId:null,
+			activeMixId: null,
+
+
+			//play music
+			playList: [],
+			playState: false,
+			lastTrack: null
 
 		}
+		var sum = 0;
+		console.log("Root constructor 运行了" + sum++);
+
 	}
-	componentDidMount() {
+	async componentDidMount() {
+		const data = await this.getMixList();
+		this.setState({ mixList: data })
 	}
+	getMixList = () => {
+		return new Promise((resolve, reject) => {
+			fetch("http://192.168.43.202:3000/getMixes")
+				.then(data => data.json())
+				.then(res => {
+					resolve(res)
+				})
+		})
+	}
+
+
 	//启示：拿root的方法作壳，在事件触发点编写回调
-	globalNavigator = (pageName,callback) => {
-		callback instanceof Function?callback(this):null;//骚操作QVQ
+	globalNavigator = (pageName, callback) => {
+		callback instanceof Function ? callback(this) : null;//骚操作QVQ
 		if (pageName == "Back") {
 			if (this.state.historyStack.length != 1) {
 				this.state.historyStack.pop()
@@ -159,8 +188,6 @@ export default class AlignItemsBasics extends React.Component {
 			this.setState({ NewMixComponent_input: null, mixList: this.state.mixList })
 		}
 		if (params && params.purpose) {
-			console.log("更改了newmix标题：" + params.purpose);
-
 			this.setState({ NewMixComponent_title: params.purpose })
 		}
 		this.setState({
@@ -251,6 +278,38 @@ export default class AlignItemsBasics extends React.Component {
 		//待续
 	}
 
+	changePlayState = (Track) => {
+		if (Track === undefined) {
+			this.state.playState?TrackPlayer.pause():TrackPlayer.play();
+			this.setState({ playState: !this.state.playState })
+			
+		}
+		else {
+			if (this.state.playState && this.state.lastTrack === Track) {
+				TrackPlayer.pause();
+				this.setState({ playState: false})
+			} else {
+				if (this.state.lastTrack != Track) {
+					this.setState({ lastTrack: Track })
+					this.state.playList.push(Track)
+					TrackPlayer.add(Track);
+					if (this.state.lastTrack === null) {
+						TrackPlayer.play();
+					} else {
+						TrackPlayer.skipToNext()
+					}
+					this.setState({ playState: true })
+					// TrackPlayer.next
+				} else {
+					TrackPlayer.play();
+				}
+			}
+		}
+	}
+	getQueue = async () => {
+		console.log(await TrackPlayer.getQueue());
+	}
+
 };
 
 
@@ -284,21 +343,12 @@ function initApp() {
 	}
 	requestStorageAccessPermission();
 
-	// AppRegistry.registerComponent(appName, () => App);
-	// TrackPlayer.registerPlaybackService(() => require('./trackserver.js'));
-	// TrackPlayer.setupPlayer().then(async () => { });
-	// http://192.168.43.202:3000/
-	// file:///storage/emulated/0/LaProvence.mp3
-	// var mytrack = {
-	//   id: 'myId',
-	//   url: " http://192.168.43.202:3000/",
-	//   title: 'myTitle',
-	//   artist: 'Huainian',
-	//   artwork: "file:///storage/emulated/0/1寸 小.png"
-	// }
-	// TrackPlayer.add(mytrack).then(() => {
-	//   TrackPlayer.play();
-	// })
+	AppRegistry.registerComponent(appName, () => App);
+	TrackPlayer.registerPlaybackService(() => require('./trackserver.js'));
+	TrackPlayer.setupPlayer().then(async () => {
+
+	});
+
 
 	// var ImageBackgroundId = null;
 	// ImageBackground.prototype.componentDidMount = function () {

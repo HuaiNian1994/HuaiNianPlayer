@@ -8,7 +8,15 @@ export default class Mixitem extends React.Component {
     }
     render() {
         return (
-            <TouchableOpacity onPress={() => { }}>
+            <TouchableOpacity onPress={() => {
+                this.props.changeplaystate({
+                    id: this.props.id,
+                    url: " http://192.168.43.202:3000/" + this.props.url,
+                    title: this.props.tracktitle,
+                    artist: this.props.artist,
+                    artwork: ""
+                })
+            }}>
                 <View style={[MyStyle.MixItem, { height: this.props.screenheight * 0.0694 }]}>
                     <View style={MyStyle.MixItemIndex}><Text style={{ color: "white" }}>{this.props.id + 1}</Text></View>
                     <Text style={MyStyle.MixItemTitle}>{this.props.tracktitle}</Text>
@@ -23,7 +31,7 @@ export default class Mixitem extends React.Component {
                     </View>
 
                     {/* menu */}
-                    <TouchableWithoutFeedback onPress={() => { this.props.changenewmenustate(this.props.tracktitle,"Edit MixItem") }}>
+                    <TouchableWithoutFeedback onPress={() => { this.props.changenewmenustate(this.props.tracktitle, "Edit MixItem") }}>
                         <Icon name="more-vertical" style={MyStyle.MixItemMenu} size={20} color="rgba(155,155,155,0.8)" />
                     </TouchableWithoutFeedback>
 

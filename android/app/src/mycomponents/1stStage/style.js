@@ -243,7 +243,6 @@ export default StyleSheet.create({//不要使用变量接收！！！坑得一B
 		position: "absolute",
 		left: "77.9%",
 		top: "22.6%",//50-54.8/2
-		color: "white"
 		// width: "7.4%",
 		// height: "54.8%",
 		// backgroundColor: "rgba(88,88,8,0.8)"

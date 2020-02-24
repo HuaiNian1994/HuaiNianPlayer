@@ -21,10 +21,12 @@ export default class MixDetails extends React.Component {
                             tracktitle={item.trackTitle}
                             tracksubtitle={item.trackSubTitle}
                             artist={item.artist}
+                            id={item.trackId}
                             url={item.url}
                             globalnavigator={this.props.handlers.globalnavigator}
                             changenewmenustate={this.props.handlers.changenewmenustate}
-                            id={item.trackId}
+                            changeplaystate={this.props.handlers.changeplaystate}
+                            
                         ></MixItem>
                     }}
                     keyExtractor={(item, index) => item.trackId + ""}
