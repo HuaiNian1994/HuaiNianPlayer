@@ -1,4 +1,5 @@
 ﻿import React, { Component } from 'react';
+import AsyncStorage from '@react-native-community/async-storage'
 import { View, Text, TextInput, TouchableWithoutFeedback, findNodeHandle, FlatList, PermissionsAndroid, Dimensions, PixelRatio, Image, ImageBackground, ScrollView, StyleSheet, StatusBar, AppRegistry } from 'react-native';
 import TrackPlayer, { STATE_PLAYING, STATE_PAUSED } from 'react-native-track-player';
 import { name as appName } from './app.json'; //唯一的入口名称
@@ -149,8 +150,30 @@ export default class AlignItemsBasics extends React.Component {
 		console.log("Root constructor 运行了" + sum++);
 
 	}
+	storeDataLocally = async (key, value) => {
+		try {
+			await AsyncStorage.setItem(key, value)
+		} catch (e) {
+			// saving error
+			console.log("本地存储失败");
+		}
+	}
+	getDataLocally = async (key) => {
+		try {
+			const value = await AsyncStorage.getItem(key)
+			return value;
+		} catch (e) {
+			// error reading value
+			console.log("本地获取失败");
+		}
+	}
 	async componentDidMount() {
-		const data = await this.getMixList();
+		var data = await this.getDataLocally("mixList");
+		data = JSON.parse(data)
+		if (!data[0] && !data[0].mixtitle) {
+			data = await this.getMixList();
+			this.storeDataLocally("mixList", JSON.stringify(data))
+		}
 		this.setState({ mixList: data })
 	}
 	getMixList = () => {
@@ -278,30 +301,32 @@ export default class AlignItemsBasics extends React.Component {
 		//待续
 	}
 
-	changePlayState = (Track) => {
+	changePlayState = async (Track) => {
 		if (Track === undefined) {
-			this.state.playState?TrackPlayer.pause():TrackPlayer.play();
+			this.state.playState ? await TrackPlayer.pause() : await TrackPlayer.play();
 			this.setState({ playState: !this.state.playState })
-			
 		}
 		else {
-			if (this.state.playState && this.state.lastTrack === Track) {
-				TrackPlayer.pause();
-				this.setState({ playState: false})
-			} else {
-				if (this.state.lastTrack != Track) {
-					this.setState({ lastTrack: Track })
-					this.state.playList.push(Track)
-					TrackPlayer.add(Track);
-					if (this.state.lastTrack === null) {
-						TrackPlayer.play();
-					} else {
-						TrackPlayer.skipToNext()
+			if (this.state.playState && this.state.lastTrack === Track.title) {//在播且请求与上次相同
+				await TrackPlayer.pause();
+				this.setState({ playState: false })
+			} else {//没在播
+				if (this.state.lastTrack != Track.title) {//本请求播放的歌曲和上一次的不同
+					await TrackPlayer.add(Track);
+					if (this.state.lastTrack === null) {//第一次播放时就直接播
+						await TrackPlayer.play();
+					} else {//不是第一次播放就下一曲，从而播放请求的歌
+						await TrackPlayer.skipToNext()
 					}
-					this.setState({ playState: true })
-					// TrackPlayer.next
-				} else {
-					TrackPlayer.play();
+					this.setState({ lastTrack: Track.title,playState: true })
+					this.state.playList.push(Track)
+				} else {//请求相同时
+					//if(this.state.playState){//正在播就暂停  此处逻辑与上方重合，故注释掉
+					//	await TrackPlayer.pause();
+					//}else{//正在暂停就播 此处一定是这个状态
+						await TrackPlayer.play();
+					//}
+					this.setState({playState:!this.state.playState})
 				}
 			}
 		}
