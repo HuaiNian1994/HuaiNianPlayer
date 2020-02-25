@@ -18,8 +18,9 @@ initApp();
 //规定：二级组件必须以对象的形式传递根组件的处理函数，对象名为handlers
 //规定：buttonName的值与该button文本的实际值一致
 //规定：根组件是数据中心，子组件只能享用而不能自建动态数据
+//立规则：自定义的属性全小写,以免与同名的变量混淆
 export default class AlignItemsBasics extends React.Component {
-	render() {//立规则：自定义的属性全小写,以免与同名的变量混淆
+	render() {
 		const containerWidth = Dimensions.get('window').width;
 		const containerHeight = Dimensions.get('window').height * 1.064;
 		return (
@@ -225,8 +226,7 @@ export default class AlignItemsBasics extends React.Component {
 
 	//启示：拿root的方法作壳，在事件触发点编写回调
 	globalNavigator = (pageName, callback) => {
-		//reset
-		this.setState({activeMixId: null,resordsOn:false,activeRecord:null})
+		this.setState({activeMixId: null,resordsOn:false,activeRecord:null});//reset
 		callback instanceof Function ? callback(this) : null;//骚操作QVQ
 		if (pageName == "Back") {
 			if (this.state.historyStack.length != 1) {

@@ -25,7 +25,7 @@ export default class MixDetails extends React.Component {
                     }}
                     keyExtractor={(item, index) => index + ""}
                     style={{ width: "100%", height: "100%" }}
-                    ListHeaderComponent={PlayAll}
+                    ListHeaderComponent={<PlayAll length={this.props.activemix_tracklist.length}></PlayAll>}
                 >
                 </FlatList>
             </View>)
@@ -48,7 +48,7 @@ class PlayAll extends React.Component {
                 left: 0,
             }}><Icon name="play-circle-outline" size={30} color="white"></Icon></View>
             <Text style={{ fontSize: 16, color: "white", position: "absolute", left: "13.88%", }}>Play all</Text>
-            <Text style={{ fontSize: 12, color: "rgba(155,155,155,0.8)", position: "absolute", left: "30%" }}>(233 Tracks)</Text>
+            <Text style={{ fontSize: 12, color: "rgba(155,155,155,0.8)", position: "absolute", left: "30%" }}>{"("+this.props.length+" Tracks)"}</Text>
         </TouchableOpacity>)
     }
 }

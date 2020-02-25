@@ -31,7 +31,7 @@ export default class Content extends React.Component {
                         </TouchableWithoutFeedback>
                         <Icon name="more-vert" size={20} color="#fff" style={MyStyle.ContentMixesBarMore} />
                         <Icon style={MyStyle.ContentMixesBarDropDown} name="expand-more" size={20} color="#fff" />
-                        <Text style={MyStyle.ContentMixesBarTitle}>  Mix created<Text style={MyStyle.description}> (5)</Text></Text>
+                        <Text style={MyStyle.ContentMixesBarTitle}>  Mix created<Text style={MyStyle.description}> {"("+this.props.mixlist.length+")"}</Text></Text>
                     </View>
                     <FlatList
                         data={this.props.mixlist}
