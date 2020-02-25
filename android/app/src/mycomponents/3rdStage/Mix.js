@@ -10,12 +10,16 @@ export default class Mix extends React.Component {
 		return (
 			<TouchableOpacity onPress={() => {
 				const MixId = this.props.id;
-				this.props.globalnavigator("Mix Details",(that) => {that.setState({ activeMixId: MixId })})
+				this.props.globalnavigator("Mix Details", (that) => { that.setState({ activeMixId: MixId }) })
 			}}>
 				<View style={[MyStyle.Mix, { height: this.props.screenheight * 0.0694 }]}>
 					<View style={MyStyle.MixCover}><Image style={{ width: "100%", height: "100%", position: "absolute", borderRadius: 10, opacity: 0.3 }} source={{ uri: "file:///storage/emulated/0/shunza.jpg" }}></Image><Icon style={{ fontWeight: "100" }} name="favorite-border" size={33} color="#fff" /></View>
 					<Text style={MyStyle.MixTitle}>{this.props.mixtitle}</Text>
-					<Text style={MyStyle.MixSubTitle}>{this.props.mixsubtitle}</Text>
+					<View style={MyStyle.MixSubTitle}>
+						<Icon name="cloud-done" color="rgba(34,165,241,0.9)" size={11}></Icon>
+						<Text style={{ color: "rgb(165,165,165)", fontSize: 11,position:"absolute",left:16 }}>{this.props.mixsubtitle}</Text>
+					</View>
+
 
 					{/* menu */}
 					<TouchableWithoutFeedback onPress={() => { this.props.changenewmenustate(this.props.mixtitle, "Edit Mix") }}>

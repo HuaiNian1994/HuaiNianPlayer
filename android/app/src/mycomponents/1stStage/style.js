@@ -40,10 +40,9 @@ export default StyleSheet.create({//不要使用变量接收！！！坑得一B
 		width: "38.2%",
 		height: "21.8%",
 		bottom: "15.8%",
-		left: "38.2%",//50-61.8/2
+		left: "45.2%",
 		// borderBottomColor: "rgba(155,155,155,0.1)",
 		// borderBottomWidth: 0.2,
-		textAlign: "center"
 		// backgroundColor:"red"
 	},
 	NavMenu: {
@@ -171,7 +170,7 @@ export default StyleSheet.create({//不要使用变量接收！！！坑得一B
 	},
 	MixTitle: {
 		position: "absolute",
-		fontSize: 14,
+		fontSize: 15,
 		width: "78%",
 		// height: "28%",
 		right: 0,
@@ -181,12 +180,11 @@ export default StyleSheet.create({//不要使用变量接收！！！坑得一B
 	},
 	MixSubTitle: {
 		position: "absolute",
-		fontSize: 8,
+		justifyContent:"center",
 		width: "78%",
 		// height: "16%",
 		right: 0,
-		top: "66.7%",
-		color: "rgb(165,165,165)"
+		top: "50.8%",
 		// backgroundColor: "rgba(188,8,88,0.8)"
 	},
 	MixMenu: {

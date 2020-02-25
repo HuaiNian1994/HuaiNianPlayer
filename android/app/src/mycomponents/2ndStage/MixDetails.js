@@ -4,8 +4,6 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import MyStyle from '../1stStage/style'
 import Record from '../3rdStage/Record'
 import MixItem from '../3rdStage/MixItem'
-
-
 export default class MixDetails extends React.Component {
     constructor(props) {
         super(props)
@@ -14,26 +12,21 @@ export default class MixDetails extends React.Component {
         return (
             <View style={MyStyle.MixDetails}>
                 <FlatList
-                    data={this.props.activemix.tracks}
+                    data={this.props.activemix_tracklist}
                     renderItem={({ item, index }) => {
                         return <MixItem
                             screenheight={this.props.screenheight}
-                            tracktitle={item.trackTitle}
-                            tracksubtitle={item.trackSubTitle}
-                            artist={item.artist}
-                            id={item.trackId}
-                            url={item.url}
+                            thistrack={item}
                             globalnavigator={this.props.handlers.globalnavigator}
                             changenewmenustate={this.props.handlers.changenewmenustate}
                             changeplaystate={this.props.handlers.changeplaystate}
-                            
+                            index={index}
                         ></MixItem>
                     }}
-                    keyExtractor={(item, index) => item.trackId + ""}
+                    keyExtractor={(item, index) => index + ""}
                     style={{ width: "100%", height: "100%" }}
                     ListHeaderComponent={PlayAll}
                 >
-
                 </FlatList>
             </View>)
     }
@@ -43,7 +36,8 @@ class PlayAll extends React.Component {
         super(props)
     }
     render() {
-        return (<TouchableOpacity style={{ position: "relative", height: 50, width: "100%", display: "flex", justifyContent: "center" }}>
+        return (<TouchableOpacity onPress={()=>{}}
+        style={{ position: "relative", height: 50, width: "100%", display: "flex", justifyContent: "center" }}>
             <View style={{
                 position: "absolute",
                 display: "flex",

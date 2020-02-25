@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList, TouchableWithoutFeedback, TextInput } from 'react-native';
+import { View, Text, FlatList, TouchableWithoutFeedback, TouchableOpacity, TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MyStyle from '../1stStage/style'
 import Record from '../3rdStage/Record'
@@ -14,8 +14,15 @@ export default class Content extends React.Component {
         return (
             <View style={MyStyle.Content}>
                 <View style={MyStyle.ContentRecords}>
-                    <Record name="library-music" content="Local music" sum="(0)" specialStyle={{ borderBottomColor: "rgba(155,155,155,0.3)", borderBottomWidth: 1 }}></Record>
-                    <Record name="history" content="Recent play" ></Record>
+                    <Record
+                        name="library-music"
+                        content="Live music"
+                        tracklist={this.props.alltrackslist}
+                        trackssum={"(" + this.props.alltrackslist.length + ")"}
+                        specialStyle={{ borderBottomColor: "rgba(155,155,155,0.3)", borderBottomWidth: 1 }}
+                        globalnavigator={this.props.handlers.globalnavigator}
+                    ></Record>
+                    <Record name="history" tracklist={this.props.playlist} trackssum={"(" + this.props.playlist.length + ")"} content="Recent play" globalnavigator={this.props.handlers.globalnavigator} ></Record>
                 </View>
                 <View style={MyStyle.ContentMixes}>
                     <View style={MyStyle.ContentMixesBar}>

@@ -39,6 +39,8 @@ export default class AlignItemsBasics extends React.Component {
 								screenheight={containerHeight}
 								screenwidth={containerWidth}
 								mixlist={this.state.mixList}
+								alltrackslist={this.state.allTracksList}
+								playlist={this.state.playList}
 								newmixcomponent_title={this.state.NewMixComponent_title}
 							></Content>
 						</View>
@@ -58,7 +60,33 @@ export default class AlignItemsBasics extends React.Component {
 								}}
 								screenheight={containerHeight}
 								screenwidth={containerWidth}
-								activemix={this.state.mixList[this.state.activeMixId]}
+								activemix_tracklist={this.state.mixList[this.state.activeMixId].tracks}
+								newmixcomponent_title={this.state.NewMixComponent_title}
+							></MixDetails>
+						</View>
+					)}
+					{this.state.nowPage == "Record Details" && (
+						<View style={{ width: "100%", height: "100%" }}>
+							<Nav menu="arrow-back" title={this.state.activeRecord}
+								handlers={{
+									globalnavigator: this.globalNavigator
+								}}></Nav>
+							<MixDetails
+								handlers={{
+									changenewmenustate: this.changeNewMenuState,
+									changenewmixstate: this.changeNewMixState,
+									globalnavigator: this.globalNavigator,
+									changeplaystate: this.changePlayState
+								}}
+								screenheight={containerHeight}
+								screenwidth={containerWidth}
+								activemix_tracklist={(()=>{
+									if(this.state.activeRecord=="Live music"){
+										return this.state.allTracksList;
+									}else if(this.state.activeRecord=="Recent play"){
+										return this.state.playList;
+									}
+								})()}
 								newmixcomponent_title={this.state.NewMixComponent_title}
 							></MixDetails>
 						</View>
@@ -104,8 +132,6 @@ export default class AlignItemsBasics extends React.Component {
 	}
 	constructor(props) {
 		super(props)
-
-
 		this.state = {
 			// for navigation
 			nowPage: "Main",
@@ -138,13 +164,17 @@ export default class AlignItemsBasics extends React.Component {
 
 			//opening a Mix
 			activeMixId: null,
-
+			
 
 			//play music
 			playList: [],
+			allTracksList: [],
 			playState: false,
-			lastTrack: null
+			lastTrack: null,
 
+			//opening a Record
+			resordsOn:false,
+			activeRecord:null,
 		}
 		var sum = 0;
 		console.log("Root constructor 运行了" + sum++);
@@ -170,11 +200,17 @@ export default class AlignItemsBasics extends React.Component {
 	async componentDidMount() {
 		var data = await this.getDataLocally("mixList");
 		data = JSON.parse(data)
+		// console.log(data[0].tacks[0].trackTitle);
+
 		if (!data[0] && !data[0].mixtitle) {
 			data = await this.getMixList();
 			this.storeDataLocally("mixList", JSON.stringify(data))
 		}
-		this.setState({ mixList: data })
+		var List = []
+		for (let i = 0; i < data.length; i++) {//风险
+			List = [...List, ...data[i].tracks]
+		}
+		this.setState({ mixList: data, allTracksList: List })
 	}
 	getMixList = () => {
 		return new Promise((resolve, reject) => {
@@ -189,6 +225,8 @@ export default class AlignItemsBasics extends React.Component {
 
 	//启示：拿root的方法作壳，在事件触发点编写回调
 	globalNavigator = (pageName, callback) => {
+		//reset
+		this.setState({activeMixId: null,resordsOn:false,activeRecord:null})
 		callback instanceof Function ? callback(this) : null;//骚操作QVQ
 		if (pageName == "Back") {
 			if (this.state.historyStack.length != 1) {
@@ -301,32 +339,32 @@ export default class AlignItemsBasics extends React.Component {
 		//待续
 	}
 
-	changePlayState = async (Track) => {
-		if (Track === undefined) {
+	changePlayState = async (Track_ForAPI, Track_MyStructure) => {
+		if (Track_ForAPI === undefined) {
 			this.state.playState ? await TrackPlayer.pause() : await TrackPlayer.play();
 			this.setState({ playState: !this.state.playState })
 		}
 		else {
-			if (this.state.playState && this.state.lastTrack === Track.title) {//在播且请求与上次相同
+			if (this.state.playState && this.state.lastTrack === Track_ForAPI.title) {//在播且请求与上次相同
 				await TrackPlayer.pause();
 				this.setState({ playState: false })
 			} else {//没在播
-				if (this.state.lastTrack != Track.title) {//本请求播放的歌曲和上一次的不同
-					await TrackPlayer.add(Track);
+				if (this.state.lastTrack != Track_ForAPI.title) {//本请求播放的歌曲和上一次的不同
+					await TrackPlayer.add(Track_ForAPI);
 					if (this.state.lastTrack === null) {//第一次播放时就直接播
 						await TrackPlayer.play();
 					} else {//不是第一次播放就下一曲，从而播放请求的歌
 						await TrackPlayer.skipToNext()
 					}
-					this.setState({ lastTrack: Track.title,playState: true })
-					this.state.playList.push(Track)
+					this.setState({ lastTrack: Track_ForAPI.title, playState: true })
+					this.state.playList.push(Track_MyStructure)
 				} else {//请求相同时
 					//if(this.state.playState){//正在播就暂停  此处逻辑与上方重合，故注释掉
 					//	await TrackPlayer.pause();
 					//}else{//正在暂停就播 此处一定是这个状态
-						await TrackPlayer.play();
+					await TrackPlayer.play();
 					//}
-					this.setState({playState:!this.state.playState})
+					this.setState({ playState: !this.state.playState })
 				}
 			}
 		}
