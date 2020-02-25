@@ -1,6 +1,6 @@
 ﻿import React, { Component } from 'react';
 import AsyncStorage from '@react-native-community/async-storage'
-import { View, Text, TextInput, TouchableWithoutFeedback, findNodeHandle, FlatList, PermissionsAndroid, Dimensions, PixelRatio, Image, ImageBackground, ScrollView, StyleSheet, StatusBar, AppRegistry } from 'react-native';
+import { View, Text, BackHandler, TextInput, TouchableWithoutFeedback, findNodeHandle, FlatList, PermissionsAndroid, Dimensions, PixelRatio, Image, ImageBackground, ScrollView, StyleSheet, StatusBar, AppRegistry } from 'react-native';
 import TrackPlayer, { STATE_PLAYING, STATE_PAUSED } from 'react-native-track-player';
 import { name as appName } from './app.json'; //唯一的入口名称
 import MyStyle from './android/app/src/mycomponents/1stStage/style'
@@ -81,10 +81,10 @@ export default class AlignItemsBasics extends React.Component {
 								}}
 								screenheight={containerHeight}
 								screenwidth={containerWidth}
-								activemix_tracklist={(()=>{
-									if(this.state.activeRecord=="Live music"){
+								activemix_tracklist={(() => {
+									if (this.state.activeRecord == "Live music") {
 										return this.state.allTracksList;
-									}else if(this.state.activeRecord=="Recent play"){
+									} else if (this.state.activeRecord == "Recent play") {
 										return this.state.playList;
 									}
 								})()}
@@ -165,7 +165,7 @@ export default class AlignItemsBasics extends React.Component {
 
 			//opening a Mix
 			activeMixId: null,
-			
+
 
 			//play music
 			playList: [],
@@ -174,11 +174,9 @@ export default class AlignItemsBasics extends React.Component {
 			lastTrack: null,
 
 			//opening a Record
-			resordsOn:false,
-			activeRecord:null,
+			resordsOn: false,
+			activeRecord: null,
 		}
-		var sum = 0;
-		console.log("Root constructor 运行了" + sum++);
 
 	}
 	storeDataLocally = async (key, value) => {
@@ -199,6 +197,10 @@ export default class AlignItemsBasics extends React.Component {
 		}
 	}
 	async componentDidMount() {
+		BackHandler.addEventListener("hardwareBackPress", ()=>{
+			this.globalNavigator("Back")
+			return true;
+			})
 		var data = await this.getDataLocally("mixList");
 		data = JSON.parse(data)
 		// console.log(data[0].tacks[0].trackTitle);
@@ -226,7 +228,7 @@ export default class AlignItemsBasics extends React.Component {
 
 	//启示：拿root的方法作壳，在事件触发点编写回调
 	globalNavigator = (pageName, callback) => {
-		this.setState({activeMixId: null,resordsOn:false,activeRecord:null});//reset
+		if(pageName != "Back"){this.setState({ activeMixId: null, resordsOn: false, activeRecord: null });}//reset
 		callback instanceof Function ? callback(this) : null;//骚操作QVQ
 		if (pageName == "Back") {
 			if (this.state.historyStack.length != 1) {

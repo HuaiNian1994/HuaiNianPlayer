@@ -1,4 +1,5 @@
 import React from 'react';
+import {BackHandler} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MyStyle from '../1stStage/style'
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
@@ -7,6 +8,7 @@ export default class Nav extends React.Component {
 	constructor(props) {
 		super(props)
 	}
+
 	render() {
 		return (
 			<View style={MyStyle.Nav}>

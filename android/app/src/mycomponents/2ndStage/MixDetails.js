@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList, TouchableWithoutFeedback, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, BackHandler,TouchableWithoutFeedback, TextInput, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MyStyle from '../1stStage/style'
 import Record from '../3rdStage/Record'
@@ -8,6 +8,7 @@ export default class MixDetails extends React.Component {
     constructor(props) {
         super(props)
     }
+    
     render() {
         return (
             <View style={MyStyle.MixDetails}>
