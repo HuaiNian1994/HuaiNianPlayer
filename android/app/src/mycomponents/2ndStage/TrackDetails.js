@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, findNodeHandle, Image, FlatList, TouchableWithoutFeedback, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, findNodeHandle, Animated, FlatList, TouchableWithoutFeedback, TouchableOpacity, TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MyStyle from '../1stStage/style'
 import Record from '../3rdStage/Record'
@@ -8,69 +8,69 @@ import { BlurView } from "@react-native-community/blur";
 
 
 export default class TrackDetails extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      viewRef: null,
-      backgroundOpacity: 0,
-      blurAmount: 0
-    };
-  }
+	constructor(props) {
+		super(props);
+		this.state = {
+			viewRef: null,
+			backgroundOpacity: 0,
+			blurAmount:100,
+			top: new Animated.Value(500)
+		};
+	}
 
-  imageLoaded() {
+	componentDidMount() {
+		setTimeout(() => {
+			this.setState({ viewRef: findNodeHandle(this.backgroundImage) });
+		}, 250)//this is f**ing stupid
+		Animated.timing(
+			this.state.top, {
+			toValue: 0,
+			duration: 100,
+			// useNativeDriver: true
+		}
+		).start();
 
-      this.setState({
-        viewRef: findNodeHandle(this.backgroundImage),
-      });
+	}
 
+	render() {
 
-  }
-  componentDidMount() {
- 
-      var timer = setInterval(() => {
-        if (this.state.backgroundOpacity >= 1) {
-          clearInterval(timer)
-        }
-        this.setState({ backgroundOpacity: this.state.backgroundOpacity + (0.001 * 30) })
-      }, 30)
+		return (
+			<Animated.View style={[styles.container, { top: this.state.top  }]}>
+			
+				<Animated.Image
+					ref={img => {
+						this.backgroundImage = img;
+					}}
+					source={require("../../images/Covers/default.jpg")}
+					style={[styles.absolute, { opacity: this.state.backgroundOpacity }]}
 
-  }
-  render() {
-    return (
-      <View style={styles.container}>
-        <Image
-          ref={img => {
-            this.backgroundImage = img;
-          }}
-          source={require("../../../../../bg.jpg")}
-          style={[styles.absolute, { opacity: this.state.backgroundOpacity }]}
-          onLoadEnd={this.imageLoaded.bind(this)}
-        />
-        <BlurView
-          style={[styles.absolute, { opacity: this.state.backgroundOpacity }]}
-          viewRef={this.state.viewRef}
-          blurType="dark"
-          blurAmount={25}
-        />
-
-        <Text>Hi, I am some unblurred text.....</Text>
-      </View>)
-  }
+				/>
+				<BlurView
+					style={[styles.absolute]}
+					viewRef={this.state.viewRef}
+					blurType="light"
+					blurAmount={this.state.blurAmount}
+				/>
+				<View style={{width:"100%",height:"100%",backgroundColor:"rgba(0,0,0,0.5)",position:"absolute"}}></View>
+				<Text>Hi, I am some unblurred text.....</Text>
+			</Animated.View>)
+	}
 }
 const styles = StyleSheet.create({
-  container: {
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
-    width: "100%"
-  },
-  absolute: {
-    position: "absolute",
-    // top: 0,
-    // left: 0,
-    // bottom: 0,
-    // right: 0,
-    height: "100%",
-    width: "100%"
-  }
+	container: {
+		position: "absolute",
+		justifyContent: "center",
+		alignItems: "center",
+		height: "100%",
+		width: "100%"
+	},
+	absolute: {
+		position: "absolute",
+		// top: 0,
+		// left: 0,
+		// bottom: 0,
+		// right: 0,
+		height: "100%",
+		width: "100%"
+	}
 });

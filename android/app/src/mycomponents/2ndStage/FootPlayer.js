@@ -8,7 +8,7 @@ export default class FootPlayer extends React.Component {
 	}
 	render() {
 		return (
-			<TouchableOpacity style={MyStyle.FootPlayer} onPress={()=>{this.props.handlers.globalnavigator("Track Details")}}>
+			<TouchableOpacity style={MyStyle.FootPlayer} onPress={()=>{this.props.handlers.backgroundfadeout();this.props.handlers.globalnavigator("Track Details")}}>
 				<View style={MyStyle.FootPlayerCover}><Image style={{ width: "100%", height: "100%", borderRadius: 999 }} source={{ uri: "file:///storage/emulated/0/shunza.jpg" }}></Image></View>
 				<Text style={MyStyle.FootPlayerTitle}>{this.props.playingtracktitle}</Text>
 				<Text style={MyStyle.FootPlayerSubTitle}>Swipe left/right to play last/next</Text>

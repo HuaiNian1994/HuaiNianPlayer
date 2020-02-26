@@ -1,6 +1,6 @@
 ﻿import React, { Component } from 'react';
 import AsyncStorage from '@react-native-community/async-storage'
-import { View, Text, BackHandler, TextInput, TouchableWithoutFeedback, findNodeHandle, FlatList, PermissionsAndroid, Dimensions, PixelRatio, Image, ImageBackground, ScrollView, StyleSheet, StatusBar, AppRegistry } from 'react-native';
+import { View, Text, BackHandler,TextInput, TouchableWithoutFeedback, findNodeHandle, FlatList, PermissionsAndroid, Dimensions, PixelRatio, Image, ImageBackground, ScrollView, StyleSheet, StatusBar, AppRegistry } from 'react-native';
 import TrackPlayer, { STATE_PLAYING, STATE_PAUSED } from 'react-native-track-player';
 import { name as appName } from './app.json'; //唯一的入口名称
 import MyStyle from './android/app/src/mycomponents/1stStage/style'
@@ -26,7 +26,10 @@ export default class AlignItemsBasics extends React.Component {
 		return (
 			<View style={{ width: "100%", height: "100%", zIndex: -999 }}>
 				{/*高度固定区，未来的pageNavigation区域*/}
-				<ImageBackground source={require("./bg.jpg")} style={MyStyle.Container, { width: this.state.containerWidth, height: this.state.containerHeight }}>
+				<View  style={MyStyle.Container, { width: this.state.containerWidth, height: this.state.containerHeight }}>
+					<Image source={require("./bg.jpg")}
+						style={{opacity:this.state.backgroundOpacity,width:"100%",height:"100%",zIndex:-999,position:"absolute"}}
+					></Image>
 					<StatusBar translucent={true} backgroundColor="transparent"></StatusBar>
 					{this.state.nowPage == "Main" && (
 						<View style={{ width: "100%", height: "100%" }}>
@@ -100,9 +103,10 @@ export default class AlignItemsBasics extends React.Component {
 						playingtracktitle={this.state.lastTrack ? this.state.lastTrack.trackTitle : "Welcome to the world ,HuaiNian!"}
 						handlers={{
 							changeplaystate: this.changePlayState,
-							globalnavigator:this.globalNavigator
+							globalnavigator:this.globalNavigator,
+							backgroundfadeout:this.backgroundFadeOut
 						}}></FootPlayer>}
-				</ImageBackground>
+				</View>
 
 
 				{/*内容弹出区*/}
@@ -183,8 +187,24 @@ export default class AlignItemsBasics extends React.Component {
 			//opening a Record
 			resordsOn: false,
 			activeRecord: null,
+
+
+			//fade out
+			backgroundOpacity:1
 		}
 
+	}
+	backgroundFadeOut=()=>{
+		var opacity=1;
+		var timer = setInterval(() => {
+        const duration=350;//与TrackDetails的开始淡入时间关联
+		opacity=this.state.backgroundOpacity - (1/duration * 30)
+        if (this.state.backgroundOpacity <= 0) {
+			this.setState({ backgroundOpacity: 0})
+          clearInterval(timer)
+        }
+        this.setState({ backgroundOpacity: opacity})
+      }, 30)
 	}
 	storeDataLocally = async (key, value) => {
 		try {
@@ -240,6 +260,7 @@ export default class AlignItemsBasics extends React.Component {
 		if (pageName != "Back") { this.setState({ activeMixId: null, resordsOn: false, activeRecord: null }); }//reset
 		callback instanceof Function ? callback(this) : null;//骚操作QVQ
 		if (pageName == "Back") {
+			this.setState({backgroundOpacity:1})
 			if (this.state.historyStack.length != 1) {
 				this.state.historyStack.pop()
 			}
