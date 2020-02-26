@@ -10,6 +10,7 @@ import MixDetails from './android/app/src/mycomponents/2ndStage/MixDetails'
 import FootPlayer from './android/app/src/mycomponents/2ndStage/FootPlayer'
 import NewMix from './android/app/src/mycomponents/popup/NewMix'
 import NewMenu from './android/app/src/mycomponents/popup/NewMenu.js'
+import TrackDetails  from './android/app/src/mycomponents/2ndStage/TrackDetails'
 //from 后跟的字符串不要有空格！！！坑得一B！！
 // import { BlurView } from "@react-native-community/blur";
 
@@ -21,12 +22,11 @@ initApp();
 //立规则：自定义的属性全小写,以免与同名的变量混淆
 export default class AlignItemsBasics extends React.Component {
 	render() {
-		const containerWidth = Dimensions.get('window').width;
-		const containerHeight = Dimensions.get('window').height * 1.064;
+
 		return (
 			<View style={{ width: "100%", height: "100%", zIndex: -999 }}>
 				{/*高度固定区，未来的pageNavigation区域*/}
-				<ImageBackground source={require("./bg.jpg")} style={MyStyle.Container, { width: containerWidth, height: containerHeight }}>
+				<ImageBackground source={require("./bg.jpg")} style={MyStyle.Container, { width: this.state.containerWidth, height: this.state.containerHeight }}>
 					<StatusBar translucent={true} backgroundColor="transparent"></StatusBar>
 					{this.state.nowPage == "Main" && (
 						<View style={{ width: "100%", height: "100%" }}>
@@ -37,8 +37,8 @@ export default class AlignItemsBasics extends React.Component {
 									changenewmixstate: this.changeNewMixState,
 									globalnavigator: this.globalNavigator
 								}}
-								screenheight={containerHeight}
-								screenwidth={containerWidth}
+								screenheight={this.state.containerHeight}
+								screenwidth={this.state.containerWidth}
 								mixlist={this.state.mixList}
 								alltrackslist={this.state.allTracksList}
 								playlist={this.state.playList}
@@ -59,8 +59,9 @@ export default class AlignItemsBasics extends React.Component {
 									globalnavigator: this.globalNavigator,
 									changeplaystate: this.changePlayState
 								}}
-								screenheight={containerHeight}
-								screenwidth={containerWidth}
+								screenheight={this.state.containerHeight}
+								screenwidth={this.state.containerWidth}
+
 								activemix_tracklist={this.state.mixList[this.state.activeMixId].tracks}
 								newmixcomponent_title={this.state.NewMixComponent_title}
 							></MixDetails>
@@ -79,8 +80,8 @@ export default class AlignItemsBasics extends React.Component {
 									globalnavigator: this.globalNavigator,
 									changeplaystate: this.changePlayState
 								}}
-								screenheight={containerHeight}
-								screenwidth={containerWidth}
+								screenheight={this.state.containerHeight}
+								screenwidth={this.state.containerWidth}
 								activemix_tracklist={(() => {
 									if (this.state.activeRecord == "Live music") {
 										return this.state.allTracksList;
@@ -92,18 +93,22 @@ export default class AlignItemsBasics extends React.Component {
 							></MixDetails>
 						</View>
 					)}
-					<FootPlayer
+
+					
+					{this.state.nowPage=="Track Details"?<TrackDetails></TrackDetails>:<FootPlayer
 						playstate={this.state.playState}
+						playingtracktitle={this.state.lastTrack ? this.state.lastTrack.trackTitle : "Welcome to the world ,HuaiNian!"}
 						handlers={{
 							changeplaystate: this.changePlayState,
-						}}></FootPlayer>
+							globalnavigator:this.globalNavigator
+						}}></FootPlayer>}
 				</ImageBackground>
 
 
 				{/*内容弹出区*/}
 				<NewMix
-					screenwidth={containerWidth}
-					screenheight={containerHeight}
+					screenwidth={this.state.containerWidth}
+					screenheight={this.state.containerHeight}
 					shownewmix={this.state.showNewMix}
 					newmixcomponent_input={this.state.NewMixComponent_input}
 					newmixcomponent_title={this.state.NewMixComponent_title}
@@ -115,8 +120,8 @@ export default class AlignItemsBasics extends React.Component {
 					}}
 				></NewMix>
 				<NewMenu
-					screenwidth={containerWidth}
-					screenheight={containerHeight}
+					screenwidth={this.state.containerWidth}
+					screenheight={this.state.containerHeight}
 					shownewmenu={this.state.showNewMenu}
 					newmenutitle={this.state.newMenuTitle}
 					newmenuitemscontent={this.state.newMenuItemsContent}
@@ -134,6 +139,8 @@ export default class AlignItemsBasics extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
+			containerWidth: Dimensions.get('window').width,
+			containerHeight: Dimensions.get('window').height * 1.064,
 			// for navigation
 			nowPage: "Main",
 			historyStack: ["Main"],
@@ -197,16 +204,18 @@ export default class AlignItemsBasics extends React.Component {
 		}
 	}
 	async componentDidMount() {
-		BackHandler.addEventListener("hardwareBackPress", ()=>{
+		BackHandler.addEventListener("hardwareBackPress", () => {
 			this.globalNavigator("Back")
 			return true;
-			})
+		})
 		var data = await this.getDataLocally("mixList");
 		data = JSON.parse(data)
 		// console.log(data[0].tacks[0].trackTitle);
 
-		if (!data[0] && !data[0].mixtitle) {
+		if (!data || !data[0] || !data[0].mixtitle) {
 			data = await this.getMixList();
+			console.log("getting");
+			
 			this.storeDataLocally("mixList", JSON.stringify(data))
 		}
 		var List = []
@@ -228,7 +237,7 @@ export default class AlignItemsBasics extends React.Component {
 
 	//启示：拿root的方法作壳，在事件触发点编写回调
 	globalNavigator = (pageName, callback) => {
-		if(pageName != "Back"){this.setState({ activeMixId: null, resordsOn: false, activeRecord: null });}//reset
+		if (pageName != "Back") { this.setState({ activeMixId: null, resordsOn: false, activeRecord: null }); }//reset
 		callback instanceof Function ? callback(this) : null;//骚操作QVQ
 		if (pageName == "Back") {
 			if (this.state.historyStack.length != 1) {
@@ -342,23 +351,23 @@ export default class AlignItemsBasics extends React.Component {
 	}
 
 	changePlayState = async (Track_ForAPI, Track_MyStructure) => {
-		if (Track_ForAPI === undefined) {
+		if (Track_ForAPI === undefined) {//如果只是单纯地切换播放状态
 			this.state.playState ? await TrackPlayer.pause() : await TrackPlayer.play();
 			this.setState({ playState: !this.state.playState })
 		}
 		else {
-			if (this.state.playState && this.state.lastTrack === Track_ForAPI.title) {//在播且请求与上次相同
+			if (this.state.playState && this.state.lastTrack === Track_MyStructure) {//在播且请求与上次相同
 				await TrackPlayer.pause();
 				this.setState({ playState: false })
 			} else {//没在播
-				if (this.state.lastTrack != Track_ForAPI.title) {//本请求播放的歌曲和上一次的不同
+				if (this.state.lastTrack != Track_MyStructure) {//本请求播放的歌曲和上一次的不同
 					await TrackPlayer.add(Track_ForAPI);
 					if (this.state.lastTrack === null) {//第一次播放时就直接播
 						await TrackPlayer.play();
 					} else {//不是第一次播放就下一曲，从而播放请求的歌
 						await TrackPlayer.skipToNext()
 					}
-					this.setState({ lastTrack: Track_ForAPI.title, playState: true })
+					this.setState({ lastTrack: Track_MyStructure, playState: true })
 					this.state.playList.push(Track_MyStructure)
 				} else {//请求相同时
 					//if(this.state.playState){//正在播就暂停  此处逻辑与上方重合，故注释掉

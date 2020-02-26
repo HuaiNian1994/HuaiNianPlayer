@@ -224,7 +224,7 @@ export default StyleSheet.create({//不要使用变量接收！！！坑得一B
 		left: "13.7%",
 		top: "19.2%",
 		width: "61.8%",
-		height: "27.3%",
+
 		// backgroundColor: "rgba(18,8,88,0.8)"
 	},
 	FootPlayerSubTitle: {
@@ -239,17 +239,18 @@ export default StyleSheet.create({//不要使用变量接收！！！坑得一B
 	},
 	FootPlayerController: {
 		position: "absolute",
+		height:"100%",
+		justifyContent:"center",
 		left: "77.9%",
-		top: "22.6%",//50-54.8/2
 		// width: "7.4%",
 		// height: "54.8%",
 		// backgroundColor: "rgba(88,88,8,0.8)"
 	},
 	FootPlayerPlaylist: {
 		position: "absolute",
+		justifyContent:"center",
 		left: "91.2%",
-		top: "35%",//50-41.1/2
-		color: "white"
+		height:"100%",
 		// width: "5.6%",
 		// height: "41.1%",
 		// backgroundColor: "rgba(88,88,118,0.8)"
@@ -312,5 +313,25 @@ export default StyleSheet.create({//不要使用变量接收！！！坑得一B
 		top: "65%",
 		backgroundColor: "rgba(188,8,88,0.8)"
 	},
+	TrackDetails:{
+		width:"100%",
+		height:"100%",
+		position:"relative",
+		backgroundColor:"red"
+	},
+	TrackDetailsHead:{
 
+	},
+	TrackDetailsCover:{
+
+	},
+	TrackDetailsMenu:{
+
+	},
+	TrackDetailsProgress:{
+
+	},
+	TrackDetailsButtonGroup:{
+
+	}
 })
