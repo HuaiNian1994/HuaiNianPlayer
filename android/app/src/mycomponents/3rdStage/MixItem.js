@@ -21,7 +21,8 @@ export default class Mixitem extends React.Component {
                     title: this.props.thistrack.trackTitle,
                     artist: this.props.thistrack.artist,
                     artwork: ""
-                }, this.props.thistrack)
+                }, this.props.thistrack);
+                this.props.updateplaylist(this.props.activemix_tracklist,"Mix")
             }}>
                 <View style={[MyStyle.MixItem, { height: this.props.screenheight * 0.0694 }]}>
                     <View style={MyStyle.MixItemIndex}><Text style={{ color: "white" }}>{this.props.index + 1}</Text></View>

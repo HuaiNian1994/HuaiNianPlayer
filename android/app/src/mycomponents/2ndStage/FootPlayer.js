@@ -13,7 +13,7 @@ export default class FootPlayer extends React.Component {
 				<Text style={MyStyle.FootPlayerTitle}>{this.props.playingtracktitle}</Text>
 				<Text style={MyStyle.FootPlayerSubTitle}>Swipe left/right to play last/next</Text>
 				<TouchableOpacity style={MyStyle.FootPlayerController} onPress={()=>{this.props.handlers.changeplaystate()}}><Icon color="rgba(230,230,230,0.9)" name={this.props.playstate?"pause-circle" :"play-circle"} size={27}></Icon></TouchableOpacity>
-				<TouchableOpacity style={MyStyle.FootPlayerPlaylist}><Icon color="rgba(230,230,230,0.9)"  name="list" size={23}></Icon></TouchableOpacity>
+				<TouchableOpacity style={MyStyle.FootPlayerPlaylist} onPress={()=>{this.props.handlers.changeplayliststate()}}><Icon color="rgba(230,230,230,0.9)"  name="list" size={23}></Icon></TouchableOpacity>
 
 			</TouchableOpacity>)
 	}

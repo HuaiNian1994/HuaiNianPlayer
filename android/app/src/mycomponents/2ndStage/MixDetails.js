@@ -21,6 +21,8 @@ export default class MixDetails extends React.Component {
                             globalnavigator={this.props.handlers.globalnavigator}
                             changenewmenustate={this.props.handlers.changenewmenustate}
                             changeplaystate={this.props.handlers.changeplaystate}
+                            activemix_tracklist={this.props.activemix_tracklist}
+                            updateplaylist={this.props.handlers.updateplaylist}
                             index={index}
                         ></MixItem>
                     }}

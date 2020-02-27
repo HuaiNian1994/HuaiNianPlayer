@@ -22,7 +22,7 @@ export default class Content extends React.Component {
                         specialStyle={{ borderBottomColor: "rgba(155,155,155,0.3)", borderBottomWidth: 1 }}
                         globalnavigator={this.props.handlers.globalnavigator}
                     ></Record>
-                    <Record name="history" tracklist={this.props.playlist} trackssum={"(" + this.props.playlist.length + ")"} content="Recent play" globalnavigator={this.props.handlers.globalnavigator} ></Record>
+                    <Record name="history" tracklist={this.props.historylist} trackssum={"(" + this.props.historylist.length + ")"} content="Recent play" globalnavigator={this.props.handlers.globalnavigator} ></Record>
                 </View>
                 <View style={MyStyle.ContentMixes}>
                     <View style={MyStyle.ContentMixesBar}>
@@ -42,6 +42,7 @@ export default class Content extends React.Component {
                                 mixsubtitle={item.mixsubtitle}
                                 globalnavigator={this.props.handlers.globalnavigator}
                                 changenewmenustate={this.props.handlers.changenewmenustate}
+                                
                                 id={item.id}
                             ></Mix>
                         }}

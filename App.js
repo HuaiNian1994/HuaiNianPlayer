@@ -1,6 +1,6 @@
 ﻿import React, { Component } from 'react';
 import AsyncStorage from '@react-native-community/async-storage'
-import { View, Text, BackHandler,TextInput, TouchableWithoutFeedback, findNodeHandle, FlatList, PermissionsAndroid, Dimensions, PixelRatio, Image, ImageBackground, ScrollView, StyleSheet, StatusBar, AppRegistry } from 'react-native';
+import { View, Text, BackHandler, TextInput, TouchableWithoutFeedback, findNodeHandle, FlatList, PermissionsAndroid, Dimensions, PixelRatio, Image, ImageBackground, ScrollView, StyleSheet, StatusBar, AppRegistry } from 'react-native';
 import TrackPlayer, { STATE_PLAYING, STATE_PAUSED } from 'react-native-track-player';
 import { name as appName } from './app.json'; //唯一的入口名称
 import MyStyle from './android/app/src/mycomponents/1stStage/style'
@@ -10,7 +10,8 @@ import MixDetails from './android/app/src/mycomponents/2ndStage/MixDetails'
 import FootPlayer from './android/app/src/mycomponents/2ndStage/FootPlayer'
 import NewMix from './android/app/src/mycomponents/popup/NewMix'
 import NewMenu from './android/app/src/mycomponents/popup/NewMenu.js'
-import TrackDetails  from './android/app/src/mycomponents/2ndStage/TrackDetails'
+import PlayList from './android/app/src/mycomponents/popup/PlayList.js'
+import TrackDetails from './android/app/src/mycomponents/2ndStage/TrackDetails'
 //from 后跟的字符串不要有空格！！！坑得一B！！
 // import { BlurView } from "@react-native-community/blur";
 
@@ -26,9 +27,9 @@ export default class AlignItemsBasics extends React.Component {
 		return (
 			<View style={{ width: "100%", height: "100%", zIndex: -999 }}>
 				{/*高度固定区，未来的pageNavigation区域*/}
-				<View  style={MyStyle.Container, { width: this.state.containerWidth, height: this.state.containerHeight }}>
+				<View style={MyStyle.Container, { width: this.state.containerWidth, height: this.state.containerHeight }}>
 					<Image source={require("./bg.jpg")}
-						style={{opacity:this.state.backgroundOpacity,width:"100%",height:"100%",zIndex:-999,position:"absolute"}}
+						style={{ opacity: this.state.backgroundOpacity, width: "100%", height: "100%", zIndex: -999, position: "absolute" }}
 					></Image>
 					<StatusBar translucent={true} backgroundColor="transparent"></StatusBar>
 					{this.state.nowPage == "Main" && (
@@ -38,13 +39,14 @@ export default class AlignItemsBasics extends React.Component {
 								handlers={{
 									changenewmenustate: this.changeNewMenuState,
 									changenewmixstate: this.changeNewMixState,
-									globalnavigator: this.globalNavigator
+									globalnavigator: this.globalNavigator,
+
 								}}
 								screenheight={this.state.containerHeight}
 								screenwidth={this.state.containerWidth}
 								mixlist={this.state.mixList}
 								alltrackslist={this.state.allTracksList}
-								playlist={this.state.playList}
+								historylist={this.state.historyList}
 								newmixcomponent_title={this.state.NewMixComponent_title}
 							></Content>
 						</View>
@@ -60,7 +62,8 @@ export default class AlignItemsBasics extends React.Component {
 									changenewmenustate: this.changeNewMenuState,
 									changenewmixstate: this.changeNewMixState,
 									globalnavigator: this.globalNavigator,
-									changeplaystate: this.changePlayState
+									changeplaystate: this.changePlayState,
+									updateplaylist: this.updatePlayList
 								}}
 								screenheight={this.state.containerHeight}
 								screenwidth={this.state.containerWidth}
@@ -89,7 +92,7 @@ export default class AlignItemsBasics extends React.Component {
 									if (this.state.activeRecord == "Live music") {
 										return this.state.allTracksList;
 									} else if (this.state.activeRecord == "Recent play") {
-										return this.state.playList;
+										return this.state.historyList;
 									}
 								})()}
 								newmixcomponent_title={this.state.NewMixComponent_title}
@@ -97,21 +100,25 @@ export default class AlignItemsBasics extends React.Component {
 						</View>
 					)}
 
-					
-					{this.state.nowPage=="Track Details"?
-					<TrackDetails 
-					screenwidth={this.state.containerWidth}
-					screenheight={this.state.containerHeight}
-					>
-					</TrackDetails>
-					:<FootPlayer
-						playstate={this.state.playState}
-						playingtracktitle={this.state.lastTrack ? this.state.lastTrack.trackTitle : "Welcome to the world ,HuaiNian!"}
-						handlers={{
-							changeplaystate: this.changePlayState,
-							globalnavigator:this.globalNavigator,
-							backgroundfadeout:this.backgroundFadeOut
-						}}></FootPlayer>}
+
+					{this.state.nowPage == "Track Details" ?
+						<TrackDetails
+							screenwidth={this.state.containerWidth}
+							screenheight={this.state.containerHeight}
+							playstate={this.state.playState}
+							playingtrack={this.state.lastTrack}
+							handlers={{ changeplaystate: this.changePlayState }}
+						>
+						</TrackDetails>
+						: <FootPlayer
+							playstate={this.state.playState}
+							playingtracktitle={this.state.lastTrack ? this.state.lastTrack.trackTitle : "Welcome to the world ,HuaiNian!"}
+							handlers={{
+								changeplaystate: this.changePlayState,
+								globalnavigator: this.globalNavigator,
+								backgroundfadeout: this.backgroundFadeOut,
+								changeplayliststate:this.changePlayListState
+							}}></FootPlayer>}
 				</View>
 
 
@@ -143,6 +150,18 @@ export default class AlignItemsBasics extends React.Component {
 						sharemix: this.shareMix
 					}}
 				></NewMenu>
+				<PlayList
+					screenwidth={this.state.containerWidth}
+					screenheight={this.state.containerHeight}
+					showplaylist={this.state.showPlayList}
+					playlisttitle={this.state.playOrder}
+					playlist={this.state.playList}
+					handlers={{
+						changeplayliststate: this.changePlayListState,
+						deleteplaylisttrack: this.deletePlayListTrack,
+					}}
+				></PlayList>
+
 			</View>
 		);
 	}
@@ -185,6 +204,7 @@ export default class AlignItemsBasics extends React.Component {
 
 
 			//play music
+			historyList: [],
 			playList: [],
 			allTracksList: [],
 			playState: false,
@@ -196,21 +216,26 @@ export default class AlignItemsBasics extends React.Component {
 
 
 			//fade out
-			backgroundOpacity:1
+			backgroundOpacity: 1,
+
+
+			//using playList
+			showPlayList: false,
+			playOrder: "loopAll"
 		}
 
 	}
-	backgroundFadeOut=()=>{
-		var opacity=1;
+	backgroundFadeOut = () => {
+		var opacity = 1;
 		var timer = setInterval(() => {
-        const duration=350;//与TrackDetails的开始淡入时间关联
-		opacity=this.state.backgroundOpacity - (1/duration * 30)
-        if (this.state.backgroundOpacity <= 0) {
-			this.setState({ backgroundOpacity: 0})
-          clearInterval(timer)
-        }
-        this.setState({ backgroundOpacity: opacity})
-      }, 30)
+			const duration = 350;//与TrackDetails的开始淡入时间关联
+			opacity = this.state.backgroundOpacity - (1 / duration * 30)
+			if (this.state.backgroundOpacity <= 0) {
+				this.setState({ backgroundOpacity: 0 })
+				clearInterval(timer)
+			}
+			this.setState({ backgroundOpacity: opacity })
+		}, 30)
 	}
 	storeDataLocally = async (key, value) => {
 		try {
@@ -241,7 +266,7 @@ export default class AlignItemsBasics extends React.Component {
 		if (!data || !data[0] || !data[0].mixtitle) {
 			data = await this.getMixList();
 			console.log("getting");
-			
+
 			this.storeDataLocally("mixList", JSON.stringify(data))
 		}
 		var List = []
@@ -263,10 +288,10 @@ export default class AlignItemsBasics extends React.Component {
 
 	//启示：拿root的方法作壳，在事件触发点编写回调
 	globalNavigator = (pageName, callback) => {
-		if (pageName != "Back") { this.setState({ activeMixId: null, resordsOn: false, activeRecord: null }); }//reset
+		// if (pageName != "Back") { this.setState({ activeMixId: null, resordsOn: false, activeRecord: null }); }//reset
 		callback instanceof Function ? callback(this) : null;//骚操作QVQ
 		if (pageName == "Back") {
-			this.setState({backgroundOpacity:1})
+			this.setState({ backgroundOpacity: 1 })
 			if (this.state.historyStack.length != 1) {
 				this.state.historyStack.pop()
 			}
@@ -324,6 +349,9 @@ export default class AlignItemsBasics extends React.Component {
 		}
 		this.setState({ showNewMenu: !this.state.showNewMenu, newMenuTitle: title })
 	}
+	changePlayListState = () => {
+		this.setState({ showPlayList: !this.state.showPlayList })
+	}
 	//业务触发者：NewMenu.delete
 	//业务返回者：NewMenu
 	//传递路径1：APP->NewMenu.delete
@@ -376,7 +404,14 @@ export default class AlignItemsBasics extends React.Component {
 	shareMix = () => {
 		//待续
 	}
+	updatePlayList = (obj, TrackOrMix) => {
 
+		this.setState({ playList: TrackOrMix == "Mix" ? obj : this.state.playList.concat(track) })
+
+	}
+	deletePlayListTrack = (index) => {
+		this.state.playList.splice(index, 1);
+	}
 	changePlayState = async (Track_ForAPI, Track_MyStructure) => {
 		if (Track_ForAPI === undefined) {//如果只是单纯地切换播放状态
 			this.state.playState ? await TrackPlayer.pause() : await TrackPlayer.play();
@@ -395,7 +430,7 @@ export default class AlignItemsBasics extends React.Component {
 						await TrackPlayer.skipToNext()
 					}
 					this.setState({ lastTrack: Track_MyStructure, playState: true })
-					this.state.playList.push(Track_MyStructure)
+					this.state.historyList.push(Track_MyStructure)
 				} else {//请求相同时
 					//if(this.state.playState){//正在播就暂停  此处逻辑与上方重合，故注释掉
 					//	await TrackPlayer.pause();
@@ -407,9 +442,7 @@ export default class AlignItemsBasics extends React.Component {
 			}
 		}
 	}
-	getQueue = async () => {
-		console.log(await TrackPlayer.getQueue());
-	}
+
 
 };
 
