@@ -314,24 +314,61 @@ export default StyleSheet.create({//不要使用变量接收！！！坑得一B
 		backgroundColor: "rgba(188,8,88,0.8)"
 	},
 	TrackDetails:{
-		width:"100%",
-		height:"100%",
-		position:"relative",
-		backgroundColor:"red"
+		position: "absolute",
+		justifyContent: "center",
+		alignItems: "center",
+		width: "100%",
+		height: "100%"
+	},
+	TrackDetailsBlurArea:{
+		position: "absolute",
+		top: 0,
+		left: 0,
+		width: "100%",
+		height: "100%"
 	},
 	TrackDetailsHead:{
+		display:"flex",
+		width:"100%",
+		height:"11.3%",
+		position:"relative",
+		// backgroundColor:"blue"
 
 	},
 	TrackDetailsCover:{
-
+		display:"flex",
+		width:"100%",
+		height:"67.3%",
+		position:"relative",
+		alignItems:"center",
+		// backgroundColor:"red"
 	},
 	TrackDetailsMenu:{
-
+		display:"flex",
+		width:"100%",
+		height:"3.24%",
+		position:"relative",
+		justifyContent:"center",
+		// backgroundColor:"green"
 	},
-	TrackDetailsProgress:{
-
+	TrackDetailsProcess:{
+		display:"flex",
+		width:"100%",
+		height:"6.2%",
+		position:"relative",
+		justifyContent:"center",
+		alignItems:"center",
+		// backgroundColor:"yellow"
 	},
 	TrackDetailsButtonGroup:{
-
+		position:"relative",
+		top:"-1.67%",
+		display:"flex",
+		width:"100%",
+		height:"10.27%",
+		position:"relative",
+		justifyContent:"center",
+		alignItems:"center",
+		// backgroundColor:"red"
 	}
 })

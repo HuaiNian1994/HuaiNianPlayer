@@ -98,7 +98,13 @@ export default class AlignItemsBasics extends React.Component {
 					)}
 
 					
-					{this.state.nowPage=="Track Details"?<TrackDetails></TrackDetails>:<FootPlayer
+					{this.state.nowPage=="Track Details"?
+					<TrackDetails 
+					screenwidth={this.state.containerWidth}
+					screenheight={this.state.containerHeight}
+					>
+					</TrackDetails>
+					:<FootPlayer
 						playstate={this.state.playState}
 						playingtracktitle={this.state.lastTrack ? this.state.lastTrack.trackTitle : "Welcome to the world ,HuaiNian!"}
 						handlers={{
