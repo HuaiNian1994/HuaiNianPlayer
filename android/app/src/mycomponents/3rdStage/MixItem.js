@@ -14,15 +14,10 @@ export default class Mixitem extends React.Component {
 
     render() {
         return (
-            <TouchableOpacity onPress={() => {
-                this.props.changeplaystate({
-                    id: this.props.thistrack.trackId,
-                    url: " http://192.168.43.202:3000/" + this.props.thistrack.url,
-                    title: this.props.thistrack.trackTitle,
-                    artist: this.props.thistrack.artist,
-                    artwork: ""
-                }, this.props.thistrack);
-                this.props.updateplaylist(this.props.activemix_tracklist,"Mix")
+            <TouchableOpacity onPress={async () => {
+                await this.props.updateplaylist(this.props.activemix_tracklist, "Mix")
+                this.props.changeplaystate(this.props.thistrack);
+                
             }}>
                 <View style={[MyStyle.MixItem, { height: this.props.screenheight * 0.0694 }]}>
                     <View style={MyStyle.MixItemIndex}><Text style={{ color: "white" }}>{this.props.index + 1}</Text></View>

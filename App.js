@@ -12,6 +12,7 @@ import NewMix from './android/app/src/mycomponents/popup/NewMix'
 import NewMenu from './android/app/src/mycomponents/popup/NewMenu.js'
 import PlayList from './android/app/src/mycomponents/popup/PlayList.js'
 import TrackDetails from './android/app/src/mycomponents/2ndStage/TrackDetails'
+import { exists } from 'react-native-fs';
 //from 后跟的字符串不要有空格！！！坑得一B！！
 // import { BlurView } from "@react-native-community/blur";
 
@@ -117,7 +118,7 @@ export default class AlignItemsBasics extends React.Component {
 								changeplaystate: this.changePlayState,
 								globalnavigator: this.globalNavigator,
 								backgroundfadeout: this.backgroundFadeOut,
-								changeplayliststate:this.changePlayListState
+								changeplayliststate: this.changePlayListState
 							}}></FootPlayer>}
 				</View>
 
@@ -405,45 +406,74 @@ export default class AlignItemsBasics extends React.Component {
 		//待续
 	}
 	updatePlayList = (obj, TrackOrMix) => {
-
-		this.setState({ playList: TrackOrMix == "Mix" ? obj : this.state.playList.concat(track) })
-
+		return new Promise(async (resolve) => {
+			if (TrackOrMix == "Mix") {
+				if (obj != this.state.playList) {//若playList与新的播放列表不一致才更新
+					await TrackPlayer.reset()
+					var list = []
+					for (let i = 0; i < obj.length; i++) {
+						list.push(this.TrackTransform(obj[i]))
+					}
+					await TrackPlayer.add(list)
+					this.setState({ playList: obj })
+				} else {
+					console.log("播放列表未变化，不更新");
+				}
+			} else {
+				await TrackPlayer.add(this.TrackTransform(obj))
+				this.setState({ playList: this.state.playList.concat(obj) })
+			}
+			resolve(true)
+		})
 	}
 	deletePlayListTrack = (index) => {
 		this.state.playList.splice(index, 1);
 	}
-	changePlayState = async (Track_ForAPI, Track_MyStructure) => {
-		if (Track_ForAPI === undefined) {//如果只是单纯地切换播放状态
+
+	//为了性能，TrackPlayer的queue要对应playList！！
+	changePlayState = async (requestingTrack) => {
+		if (requestingTrack=== undefined) {//如果只是单纯地切换播放状态
 			this.state.playState ? await TrackPlayer.pause() : await TrackPlayer.play();
 			this.setState({ playState: !this.state.playState })
 		}
 		else {
-			if (this.state.playState && this.state.lastTrack === Track_MyStructure) {//在播且请求与上次相同
+			if (this.state.playState && this.state.lastTrack.trackId === requestingTrack.trackId) {//在播且请求与上次相同
 				await TrackPlayer.pause();
 				this.setState({ playState: false })
 			} else {//没在播
-				if (this.state.lastTrack != Track_MyStructure) {//本请求播放的歌曲和上一次的不同
-					await TrackPlayer.add(Track_ForAPI);
-					if (this.state.lastTrack === null) {//第一次播放时就直接播
-						await TrackPlayer.play();
-					} else {//不是第一次播放就下一曲，从而播放请求的歌
-						await TrackPlayer.skipToNext()
+				if (!this.state.lastTrack || this.state.lastTrack.trackId != requestingTrack.trackId) {//本请求播放的歌曲和上一次的不同
+					if (!this.existsInHistoryList(requestingTrack)) {//如果历史记录没有此歌就记录
+						this.state.historyList.push(requestingTrack)
 					}
-					this.setState({ lastTrack: Track_MyStructure, playState: true })
-					this.state.historyList.push(Track_MyStructure)
-				} else {//请求相同时
-					//if(this.state.playState){//正在播就暂停  此处逻辑与上方重合，故注释掉
-					//	await TrackPlayer.pause();
-					//}else{//正在暂停就播 此处一定是这个状态
+					console.log("即将跳转到：" + requestingTrack.trackTitle + ", ID是：" + requestingTrack.trackId.toString());
+					await TrackPlayer.skip(requestingTrack.trackId.toString())// Must be a string, required
+					await TrackPlayer.play()//跳转完后要play(this is f**king stupid)
+					this.setState({ lastTrack: requestingTrack, playState: true })
+
+				} else {//本请求播放的歌曲和上一次的相同
 					await TrackPlayer.play();
-					//}
 					this.setState({ playState: !this.state.playState })
 				}
 			}
 		}
 	}
-
-
+	existsInHistoryList = (Track_MyStructure) => {
+		for (let i = 0; i < this.state.historyList.length; i++) {
+			if (this.state.historyList[i].trackId == Track_MyStructure.trackId) {
+				return true;
+			}
+		}
+		return false;
+	}
+	TrackTransform = (Track_MyStructure) => {
+		return Track_PlayerStructure = {
+			id: Track_MyStructure.trackId.toString(),
+			url: " http://192.168.43.202:3000/" + Track_MyStructure.url,
+			title: Track_MyStructure.trackTitle,
+			artist: Track_MyStructure.artist,
+			artwork: ""
+		}
+	}
 };
 
 
