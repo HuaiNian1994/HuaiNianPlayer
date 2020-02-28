@@ -358,7 +358,7 @@ export default StyleSheet.create({//不要使用变量接收！！！坑得一B
 		position:"relative",
 		justifyContent:"center",
 		alignItems:"center",
-		// backgroundColor:"yellow"
+		backgroundColor:"transparent"//非常重要！！没有设置颜色将不会被视为响应区！坑得一B！！！！
 	},
 	TrackDetailsButtonGroup:{
 		position:"relative",

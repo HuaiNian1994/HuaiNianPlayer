@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Easing, StyleSheet, Image, findNodeHandle, Animated, FlatList, TouchableWithoutFeedback, TouchableOpacity, TextInput, ImageBackground } from 'react-native';
+import { View, Text, Easing, PanResponder, Dimensions, StyleSheet, Image, findNodeHandle, Animated, FlatList, TouchableWithoutFeedback, TouchableOpacity, TextInput, ImageBackground } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MyStyle from '../1stStage/style'
 import Record from '../3rdStage/Record'
@@ -20,7 +20,7 @@ export default class TrackDetails extends React.Component {
 		};
 	}
 
-	imageLoaded = async () => {
+	imageLoaded = () => {
 		const duration = 250;
 		setTimeout(() => {
 			this.setState({ viewRef: findNodeHandle(this.backgroundImage) });
@@ -37,10 +37,6 @@ export default class TrackDetails extends React.Component {
 			duration: duration,
 			// useNativeDriver: true
 		}).start();
-		console.log("duration" + await TrackPlayer.getDuration());
-		console.log("position" + await TrackPlayer.getPosition());
-
-
 	}
 	componentDidMount() {
 		this.props.playstate ? this.spin() : this.stopSpin();
@@ -131,6 +127,7 @@ export default class TrackDetails extends React.Component {
 
 		)
 	}
+
 }
 secToMin = (sec) => {
 	var second = Math.floor(sec % 60);
@@ -139,6 +136,7 @@ secToMin = (sec) => {
 	minute = minute < 10 ? "0" + minute : minute;
 	return minute + ":" + second;
 }
+const screenWidth = Math.round(Dimensions.get('window').width);
 class Progress extends ProgressComponent {
 	constructor(props) {
 		super(props)
@@ -148,13 +146,34 @@ class Progress extends ProgressComponent {
 			duration: 1,
 		}
 	}
+	setProgress = PanResponder.create({
+		onStartShouldSetPanResponder: (evt, gestureState) => true,
+		// onPanResponderGrant: (evt, gestureState) => {
+		// },
+		onPanResponderRelease: (e, gestureState) => {
+			const Beginning = Math.round(screenWidth * 0.3 / 2);
+			const Ending = screenWidth - Beginning;
+			const X=Math.round(gestureState.x0)
+			var relativeX=null;
+			if(X<Beginning ){//x是一个按钮相对于进度条的坐标。意指手放开后，按钮应被挪到的位置
+				relativeX=0;
+			}else if(X>Ending ){
+				relativeX=Ending-Beginning;
+			}else{
+				relativeX=X-Beginning;
+			}
+			const playPrecent=relativeX/(screenWidth*0.7);
+			TrackPlayer.seekTo(this.state.duration*playPrecent);
+		},
+	})
 	render() {
+
 		const bufferedPercent = this.getBufferedProgress() * 100 + "%";
 		const playedPercent = this.state.position / this.state.duration * 100 + "%";
 		return (
-			<View style={MyStyle.TrackDetailsProgress}>
+			<View {...this.setProgress.panHandlers} style={MyStyle.TrackDetailsProgress}>
 				<Text style={{ position: "absolute", left: "5.5%", fontSize: 12, color: "rgba(180,180,180,0.8)" }}>{secToMin(this.state.position)}</Text>
-				<View style={{ position: "relative", justifyContent: "center", height: 1, width: "70.37%", backgroundColor: "rgba(155,155,155,0.5)" }} >
+				<View style={{ position: "relative", justifyContent: "center", height: 1, width: "70%", backgroundColor: "rgba(155,155,155,0.5)" }} >
 					<View style={{ height: "100%", width: bufferedPercent, backgroundColor: "rgba(180,180,180,0.8)" }}></View>
 					<View style={{ position: "absolute", left: playedPercent, height: 5, width: 5, borderRadius: 999, backgroundColor: "rgba(220,220,220,0.8)" }}></View>
 				</View>
