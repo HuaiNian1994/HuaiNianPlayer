@@ -5,6 +5,7 @@ import MyStyle from '../1stStage/style'
 import Record from '../3rdStage/Record'
 import Mix from '../3rdStage/Mix'
 import { BlurView } from "@react-native-community/blur";
+import TrackPlayer, { ProgressComponent } from 'react-native-track-player'
 
 export default class TrackDetails extends React.Component {
 	constructor(props) {
@@ -18,7 +19,8 @@ export default class TrackDetails extends React.Component {
 			playing: this.props.playstate
 		};
 	}
-	imageLoaded = () => {
+
+	imageLoaded = async () => {
 		const duration = 250;
 		setTimeout(() => {
 			this.setState({ viewRef: findNodeHandle(this.backgroundImage) });
@@ -35,9 +37,14 @@ export default class TrackDetails extends React.Component {
 			duration: duration,
 			// useNativeDriver: true
 		}).start();
+		console.log("duration" + await TrackPlayer.getDuration());
+		console.log("position" + await TrackPlayer.getPosition());
+
+
 	}
 	componentDidMount() {
 		this.props.playstate ? this.spin() : this.stopSpin();
+
 	}
 	spin = () => {
 		Animated.timing(
@@ -98,11 +105,9 @@ export default class TrackDetails extends React.Component {
 						<Image style={{ position: "absolute", width: "12%", height: "100%", right: "25%" }} source={require("../../images/btn/other/love.png")} ></Image>
 						<Image style={{ position: "absolute", width: "12%", height: "100%", right: "7%" }} source={require("../../images/btn/other/more.png")}></Image>
 					</View>
-					<View style={MyStyle.TrackDetailsProcess}>
-						<Text style={{ position: "absolute", left: "5.5%", fontSize: 12, color: "rgba(155,155,155,0.5)" }}>0:00</Text>
-						<View style={{ height: 1, width: "70.37%", backgroundColor: "rgba(155,155,155,0.5)" }}></View>
-						<Text style={{ position: "absolute", right: "5.5%", fontSize: 12, color: "rgba(155,155,155,0.5)" }}>3:00</Text>
-					</View>
+
+					<Progress></Progress>
+
 					<View style={MyStyle.TrackDetailsButtonGroup}>
 						<Image style={{ position: "absolute", width: "12%", height: "28%", left: "7%" }} source={require("../../images/btn/other/loop1.png")}></Image>
 
@@ -125,5 +130,36 @@ export default class TrackDetails extends React.Component {
 			</Animated.View>
 
 		)
+	}
+}
+secToMin = (sec) => {
+	var second = Math.floor(sec % 60);
+	second = second < 10 ? "0" + second : second;
+	var minute = Math.floor(sec / 60);
+	minute = minute < 10 ? "0" + minute : minute;
+	return minute + ":" + second;
+}
+class Progress extends ProgressComponent {
+	constructor(props) {
+		super(props)
+		this.state = {
+			position: 0,
+			bufferedPosition: 0,
+			duration: 1,
+		}
+	}
+	render() {
+		const bufferedPercent = this.getBufferedProgress() * 100 + "%";
+		const playedPercent = this.state.position / this.state.duration * 100 + "%";
+		return (
+			<View style={MyStyle.TrackDetailsProgress}>
+				<Text style={{ position: "absolute", left: "5.5%", fontSize: 12, color: "rgba(180,180,180,0.8)" }}>{secToMin(this.state.position)}</Text>
+				<View style={{ position: "relative", justifyContent: "center", height: 1, width: "70.37%", backgroundColor: "rgba(155,155,155,0.5)" }} >
+					<View style={{ height: "100%", width: bufferedPercent, backgroundColor: "rgba(180,180,180,0.8)" }}></View>
+					<View style={{ position: "absolute", left: playedPercent, height: 5, width: 5, borderRadius: 999, backgroundColor: "rgba(220,220,220,0.8)" }}></View>
+				</View>
+				<Text style={{ position: "absolute", right: "5.5%", fontSize: 12, color: "rgba(180,180,180,0.8)" }}>{secToMin(this.state.duration)}</Text>
+			</View>
+		);
 	}
 }

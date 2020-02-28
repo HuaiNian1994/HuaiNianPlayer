@@ -351,7 +351,7 @@ export default StyleSheet.create({//不要使用变量接收！！！坑得一B
 		justifyContent:"center",
 		// backgroundColor:"green"
 	},
-	TrackDetailsProcess:{
+	TrackDetailsProgress:{
 		display:"flex",
 		width:"100%",
 		height:"6.2%",
