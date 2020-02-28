@@ -36,19 +36,19 @@ export default class TrackDetails extends React.Component {
 			// useNativeDriver: true
 		}).start();
 	}
-	componentDidMount(){
-		this.props.playstate?this.spin():this.stopSpin();
+	componentDidMount() {
+		this.props.playstate ? this.spin() : this.stopSpin();
 	}
 	spin = () => {
 		Animated.timing(
 			this.state.coverDegree, {//默认一首歌可以播十万分钟
-			toValue: 60*100000,
-			duration: 30000*100000,
+			toValue: 60 * 100000,
+			duration: 30000 * 100000,
 			easing: Easing.bezier(0, 0, 1, 1)
 		}
 		).start()
 	}
-	stopSpin=()=>{
+	stopSpin = () => {
 		Animated.timing(
 			this.state.coverDegree
 		).stop()
@@ -81,8 +81,8 @@ export default class TrackDetails extends React.Component {
 				<Animated.View style={[MyStyle.TrackDetails, { top: this.state.top }]}>
 					<View style={MyStyle.TrackDetailsHead}>
 						<Icon style={{ position: "absolute", bottom: "20%", left: "4.8%" }} size={26} name="arrow-back" color="white"></Icon>
-						<Text style={{ position: "absolute", bottom: "33%", left: "15.6%", color: "white", fontSize: 17 }}>{this.props.playingtrack? this.props.playingtrack.trackTitle : "Welcome to the world ,HuaiNian!"}</Text>
-						<Text style={{ position: "absolute", bottom: "16%", left: "15.6%", color: "rgba(155,155,155,0.8)", fontSize: 12 }}>{this.props.playingtrack? this.props.playingtrack.artist : "HuaiNian1994"}</Text>
+						<Text style={{ position: "absolute", bottom: "33%", left: "15.6%", color: "white", fontSize: 17 }}>{this.props.playingtrack ? this.props.playingtrack.trackTitle : "Welcome to the world ,HuaiNian!"}</Text>
+						<Text style={{ position: "absolute", bottom: "16%", left: "15.6%", color: "rgba(155,155,155,0.8)", fontSize: 12 }}>{this.props.playingtrack ? this.props.playingtrack.artist : "HuaiNian1994"}</Text>
 						<Image style={{ position: "absolute", width: "10%", height: "24%", bottom: "30%", right: "3.7%" }} source={require("../../images/btn/other/share.png")} ></Image>
 					</View>
 					<View style={MyStyle.TrackDetailsCover}>
@@ -105,13 +105,21 @@ export default class TrackDetails extends React.Component {
 					</View>
 					<View style={MyStyle.TrackDetailsButtonGroup}>
 						<Image style={{ position: "absolute", width: "12%", height: "28%", left: "7%" }} source={require("../../images/btn/other/loop1.png")}></Image>
-						<Image style={{ position: "absolute", width: "12%", height: "28%", left: "25%" }} source={require("../../images/btn/previous.png")}></Image>
-						
-						<TouchableOpacity onPress={()=>{this.props.playstate?this.stopSpin():this.spin();this.props.handlers.changeplaystate()}} style={{ position: "absolute", width: "17%", height: "67%" }}>
-							{this.props.playstate?<Image style={{ width: "100%", height: "100%" }} source={require("../../images/btn/pause.png")}></Image>:<Image style={{ width: "100%", height: "100%" }} source={require("../../images/btn/play.png")}></Image>}
-							</TouchableOpacity>
-						<Image style={{ position: "absolute", width: "12%", height: "28%", right: "25%" }} source={require("../../images/btn/next.png")}></Image>
-						<Image style={{ position: "absolute", width: "12%", height: "28%", right: "7%" }} source={require("../../images/btn/other/list.png")}></Image>
+
+						<TouchableOpacity style={{ position: "absolute", width: "12%", height: "28%", left: "25%" }} onPress={() => { this.props.handlers.changeplaystate("previous") }}>
+							<Image style={{ width: "100%", height: "100%" }} source={require("../../images/btn/previous.png")}></Image>
+						</TouchableOpacity>
+						<TouchableOpacity onPress={() => { this.props.playstate ? this.stopSpin() : this.spin(); this.props.handlers.changeplaystate() }} style={{ position: "absolute", width: "17%", height: "67%" }}>
+							{this.props.playstate ? <Image style={{ width: "100%", height: "100%" }} source={require("../../images/btn/pause.png")}></Image> : <Image style={{ width: "100%", height: "100%" }} source={require("../../images/btn/play.png")}></Image>}
+						</TouchableOpacity>
+						<TouchableOpacity style={{ position: "absolute", width: "12%", height: "28%", right: "25%" }} onPress={() => { this.props.handlers.changeplaystate("next") }}>
+							<Image style={{ width: "100%", height: "100%" }} source={require("../../images/btn/next.png")}></Image>
+						</TouchableOpacity>
+
+						<TouchableOpacity style={{ position: "absolute", width: "12%", height: "28%", right: "7%" }} onPress={() => { this.props.handlers.changeplayliststate() }}>
+							<Image style={{ width: "100%", height: "100%" }} source={require("../../images/btn/other/list.png")}></Image>
+						</TouchableOpacity>
+
 					</View>
 				</Animated.View>
 			</Animated.View>

@@ -1,7 +1,7 @@
 ﻿import React, { Component } from 'react';
 import AsyncStorage from '@react-native-community/async-storage'
 import { View, Text, BackHandler, TextInput, TouchableWithoutFeedback, findNodeHandle, FlatList, PermissionsAndroid, Dimensions, PixelRatio, Image, ImageBackground, ScrollView, StyleSheet, StatusBar, AppRegistry } from 'react-native';
-import TrackPlayer, { STATE_PLAYING, STATE_PAUSED } from 'react-native-track-player';
+import TrackPlayer, { CAPABILITY_PLAY, CAPABILITY_PAUSE, CAPABILITY_STOP, CAPABILITY_SKIP_TO_NEXT, CAPABILITY_SKIP_TO_PREVIOUS, CAPABILITY_JUMP_FORWARD, CAPABILITY_JUMP_BACKWARD } from 'react-native-track-player';
 import { name as appName } from './app.json'; //唯一的入口名称
 import MyStyle from './android/app/src/mycomponents/1stStage/style'
 import Nav from './android/app/src/mycomponents/2ndStage/Nav'
@@ -13,7 +13,7 @@ import NewMenu from './android/app/src/mycomponents/popup/NewMenu.js'
 import PlayList from './android/app/src/mycomponents/popup/PlayList.js'
 import TrackDetails from './android/app/src/mycomponents/2ndStage/TrackDetails'
 import { exists } from 'react-native-fs';
-//from 后跟的字符串不要有空格！！！坑得一B！！
+//from 后跟的字符串末尾不要有空格！！！坑得一B！！
 // import { BlurView } from "@react-native-community/blur";
 
 initApp();
@@ -24,7 +24,6 @@ initApp();
 //立规则：自定义的属性全小写,以免与同名的变量混淆
 export default class AlignItemsBasics extends React.Component {
 	render() {
-
 		return (
 			<View style={{ width: "100%", height: "100%", zIndex: -999 }}>
 				{/*高度固定区，未来的pageNavigation区域*/}
@@ -108,7 +107,11 @@ export default class AlignItemsBasics extends React.Component {
 							screenheight={this.state.containerHeight}
 							playstate={this.state.playState}
 							playingtrack={this.state.lastTrack}
-							handlers={{ changeplaystate: this.changePlayState }}
+							handlers={{
+								changeplaystate: this.changePlayState,
+								changeplayliststate: this.changePlayListState,
+
+							}}
 						>
 						</TrackDetails>
 						: <FootPlayer
@@ -210,7 +213,8 @@ export default class AlignItemsBasics extends React.Component {
 			allTracksList: [],
 			playState: false,
 			lastTrack: null,
-
+			playOrder: "loopAll",
+			controlledAuto: false,
 			//opening a Record
 			resordsOn: false,
 			activeRecord: null,
@@ -222,7 +226,7 @@ export default class AlignItemsBasics extends React.Component {
 
 			//using playList
 			showPlayList: false,
-			playOrder: "loopAll"
+
 		}
 
 	}
@@ -432,29 +436,43 @@ export default class AlignItemsBasics extends React.Component {
 
 	//为了性能，TrackPlayer的queue要对应playList！！
 	changePlayState = async (requestingTrack) => {
-		if (requestingTrack=== undefined) {//如果只是单纯地切换播放状态
+		this.setState({ controlledAuto: false })
+		if (requestingTrack === undefined) {//如果只是单纯地切换播放状态
 			this.state.playState ? await TrackPlayer.pause() : await TrackPlayer.play();
-			this.setState({ playState: !this.state.playState })
-		}
-		else {
+			this.setState({ playState: !this.state.playState });
+			return;
+		} else if (typeof requestingTrack == "string") {
+			var index = this.trackIndexInPlayList(this.state.lastTrack)
+			switch (requestingTrack) {
+				case "next":
+					let next = index == this.state.playList.length - 1 ? 0 : index + 1;
+					requestingTrack = this.state.playList[next];
+					break;
+				case "previous":
+					let previous = index == 0 ? this.state.playList.length - 1 : index - 1;
+					requestingTrack = this.state.playList[previous];
+					break;
+			}
+			await TrackPlayer.skip(requestingTrack.trackId.toString());// Must be a string, required
+		} else {//请求的是一首具体的歌时
 			if (this.state.playState && this.state.lastTrack.trackId === requestingTrack.trackId) {//在播且请求与上次相同
 				await TrackPlayer.pause();
-				this.setState({ playState: false })
+				this.setState({ playState: false });
+				return;
 			} else {//没在播
 				if (!this.state.lastTrack || this.state.lastTrack.trackId != requestingTrack.trackId) {//本请求播放的歌曲和上一次的不同
-					if (!this.existsInHistoryList(requestingTrack)) {//如果历史记录没有此歌就记录
-						this.state.historyList.push(requestingTrack)
-					}
 					console.log("即将跳转到：" + requestingTrack.trackTitle + ", ID是：" + requestingTrack.trackId.toString());
-					await TrackPlayer.skip(requestingTrack.trackId.toString())// Must be a string, required
-					await TrackPlayer.play()//跳转完后要play(this is f**king stupid)
-					this.setState({ lastTrack: requestingTrack, playState: true })
-
-				} else {//本请求播放的歌曲和上一次的相同
-					await TrackPlayer.play();
-					this.setState({ playState: !this.state.playState })
+					await TrackPlayer.skip(requestingTrack.trackId.toString());// Must be a string, required
 				}
+
 			}
+		}
+		await TrackPlayer.play()//跳转完后要play(this is f**king stupid)
+		this.setState({ lastTrack: requestingTrack, playState: true })
+		if (!this.existsInHistoryList(requestingTrack)) {//如果历史记录没有此歌就记录
+			this.state.historyList.push(requestingTrack)
+		} else {
+
 		}
 	}
 	existsInHistoryList = (Track_MyStructure) => {
@@ -473,6 +491,18 @@ export default class AlignItemsBasics extends React.Component {
 			artist: Track_MyStructure.artist,
 			artwork: ""
 		}
+	}
+	trackIndexInPlayList = (track) => {
+		// console.log("正在查找：");
+		// console.log(track);
+		// console.log("此时的playlist为 ");
+		// console.log(this.state.playList);
+
+		for (let i = 0; i < this.state.playList.length; i++) {
+			if (track.trackId == this.state.playList[i].trackId) return i;
+		}
+		console.log("找不到trackIndexInPlayList");
+		return -1;
 	}
 };
 
@@ -506,11 +536,14 @@ function initApp() {
 		}
 	}
 	requestStorageAccessPermission();
-
 	AppRegistry.registerComponent(appName, () => App);
 	TrackPlayer.registerPlaybackService(() => require('./trackserver.js'));
 	TrackPlayer.setupPlayer().then(async () => {
-
+		TrackPlayer.updateOptions({
+			capabilities: [CAPABILITY_PLAY, CAPABILITY_PAUSE, CAPABILITY_STOP, CAPABILITY_SKIP_TO_NEXT, CAPABILITY_SKIP_TO_PREVIOUS, CAPABILITY_JUMP_FORWARD, CAPABILITY_JUMP_BACKWARD],
+			notificationCapabilities: [CAPABILITY_PLAY, CAPABILITY_PAUSE, CAPABILITY_STOP, CAPABILITY_SKIP_TO_NEXT, CAPABILITY_SKIP_TO_PREVIOUS, CAPABILITY_JUMP_FORWARD, CAPABILITY_JUMP_BACKWARD],
+			compactCapabilities: [CAPABILITY_PLAY, CAPABILITY_PAUSE, CAPABILITY_STOP, CAPABILITY_SKIP_TO_NEXT, CAPABILITY_SKIP_TO_PREVIOUS, CAPABILITY_JUMP_FORWARD, CAPABILITY_JUMP_BACKWARD]
+		})
 	});
 
 
