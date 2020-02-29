@@ -161,12 +161,11 @@ export default StyleSheet.create({//不要使用变量接收！！！坑得一B
 		display: "flex",
 		justifyContent: "center",
 		alignItems: "center",
-
 		width: "13.9%",
 		height: "100%",
 		left: "4.2%",
-		backgroundColor: "#000",
-		borderRadius: 10
+		borderRadius: 5,
+		overflow:"hidden"
 	},
 	MixTitle: {
 		position: "absolute",

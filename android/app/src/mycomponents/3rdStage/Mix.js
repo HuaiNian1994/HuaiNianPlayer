@@ -7,17 +7,22 @@ export default class Mix extends React.Component {
 		super(props)
 	}
 	render() {
+		const MixId = this.props.id;
+		const isFav = Boolean(this.props.mixtitle == "槐念喜欢的音乐");
 		return (
 			<TouchableOpacity onPress={() => {
-				const MixId = this.props.id;
+
 				this.props.globalnavigator("Mix Details", (that) => { that.setState({ activeMixId: MixId }) })
 			}}>
 				<View style={[MyStyle.Mix, { height: this.props.screenheight * 0.0694 }]}>
-					<View style={MyStyle.MixCover}><Image style={{ width: "100%", height: "100%", position: "absolute", borderRadius: 10, opacity: 0.3 }} source={{ uri: "file:///storage/emulated/0/shunza.jpg" }}></Image><Icon style={{ fontWeight: "100" }} name="favorite-border" size={33} color="#fff" /></View>
+					<View style={[MyStyle.MixCover, { backgroundColor: isFav ? "#000" : "transparent" }]}>
+						<Image style={{ width: "100%", height: "100%", position: "absolute", opacity: isFav ? 0.3 : 1 }} source={{ uri: "file:///storage/emulated/0/Covers/" + this.props.mixcover }}/>
+						{isFav ? <Image source={require("../../images/btn/other/love.png")} style={{width:"100%",height:"100%"}} /> : null}
+					</View>
 					<Text style={MyStyle.MixTitle}>{this.props.mixtitle}</Text>
 					<View style={MyStyle.MixSubTitle}>
 						<Icon name="cloud-done" color="rgba(34,165,241,0.9)" size={11}></Icon>
-						<Text style={{ color: "rgb(165,165,165)", fontSize: 11,position:"absolute",left:16 }}>{this.props.mixsubtitle}</Text>
+						<Text style={{ color: "rgb(165,165,165)", fontSize: 11, position: "absolute", left: 16 }}>{this.props.mixsubtitle}</Text>
 					</View>
 
 

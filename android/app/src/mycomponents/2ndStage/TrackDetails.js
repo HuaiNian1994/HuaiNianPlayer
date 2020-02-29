@@ -38,10 +38,7 @@ export default class TrackDetails extends React.Component {
 			// useNativeDriver: true
 		}).start();
 	}
-	componentDidMount() {
-		this.props.playstate ? this.spin() : this.stopSpin();
 
-	}
 	spin = () => {
 		Animated.timing(
 			this.state.coverDegree, {//默认一首歌可以播十万分钟
@@ -57,6 +54,7 @@ export default class TrackDetails extends React.Component {
 		).stop()
 	}
 	render() {
+		this.props.playstate ? this.spin() : this.stopSpin();//不要写在componentDidMount中，否则与预期不一致
 		var degree = this.state.coverDegree.interpolate({
 			inputRange: [0, 60],
 			outputRange: ["0deg", "360deg"]

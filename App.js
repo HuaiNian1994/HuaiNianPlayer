@@ -1,7 +1,7 @@
 ﻿import React, { Component } from 'react';
 import AsyncStorage from '@react-native-community/async-storage'
 import { View, Text, BackHandler, TextInput, TouchableWithoutFeedback, findNodeHandle, FlatList, PermissionsAndroid, Dimensions, PixelRatio, Image, ImageBackground, ScrollView, StyleSheet, StatusBar, AppRegistry } from 'react-native';
-import TrackPlayer, { CAPABILITY_PLAY, CAPABILITY_PAUSE, CAPABILITY_STOP, CAPABILITY_SKIP_TO_NEXT, CAPABILITY_SKIP_TO_PREVIOUS, CAPABILITY_JUMP_FORWARD, CAPABILITY_JUMP_BACKWARD } from 'react-native-track-player';
+import TrackPlayer, { CAPABILITY_PLAY, CAPABILITY_PAUSE, CAPABILITY_STOP, CAPABILITY_SKIP_TO_NEXT, CAPABILITY_SKIP_TO_PREVIOUS, CAPABILITY_JUMP_FORWARD, CAPABILITY_JUMP_BACKWARD, STATE_NONE, STATE_PLAYING, STATE_PAUSED, STATE_STOPPED, STATE_BUFFERING } from 'react-native-track-player';
 import { name as appName } from './app.json'; //唯一的入口名称
 import MyStyle from './android/app/src/mycomponents/1stStage/style'
 import Nav from './android/app/src/mycomponents/2ndStage/Nav'
@@ -40,7 +40,7 @@ export default class AlignItemsBasics extends React.Component {
 									changenewmenustate: this.changeNewMenuState,
 									changenewmixstate: this.changeNewMixState,
 									globalnavigator: this.globalNavigator,
-
+									updatedatafromserver: this.updateDataFromServer
 								}}
 								screenheight={this.state.containerHeight}
 								screenwidth={this.state.containerWidth}
@@ -213,8 +213,10 @@ export default class AlignItemsBasics extends React.Component {
 			allTracksList: [],
 			playState: false,
 			lastTrack: null,
-			playOrder: "loopAll",
+			playOrder: "Loop All",
 			controlledAuto: false,
+			coverList: [],
+
 			//opening a Record
 			resordsOn: false,
 			activeRecord: null,
@@ -226,6 +228,9 @@ export default class AlignItemsBasics extends React.Component {
 
 			//using playList
 			showPlayList: false,
+
+
+
 
 		}
 
@@ -260,25 +265,53 @@ export default class AlignItemsBasics extends React.Component {
 		}
 	}
 	async componentDidMount() {
+		this.updateDataFromServer();
+		
+		TrackPlayer.addEventListener('playback-track-changed', async (dataAutoProvided) => {
+			const track = await TrackPlayer.getTrack(dataAutoProvided.nextTrack);
+			if (track) {
+				this.setState({ lastTrack: this.state.allTracksList[track.id] });
+				// await TrackPlayer.updateOptions({})
+			}
+		});
+		TrackPlayer.addEventListener('remote-play', () => {
+			TrackPlayer.play()
+			this.setState({playState:true})
+		});
+		TrackPlayer.addEventListener('remote-pause', () =>{
+			TrackPlayer.pause()
+			this.setState({playState:false})
+		});
+		TrackPlayer.addEventListener('remote-next', () => TrackPlayer.skipToNext());
+		TrackPlayer.addEventListener('remote-previous', () => TrackPlayer.skipToPrevious());
+
 		BackHandler.addEventListener("hardwareBackPress", () => {
 			this.globalNavigator("Back")
 			return true;
 		})
-		var data = await this.getDataLocally("mixList");
-		data = JSON.parse(data)
-		// console.log(data[0].tacks[0].trackTitle);
 
-		if (!data || !data[0] || !data[0].mixtitle) {
-			data = await this.getMixList();
-			console.log("getting");
 
-			this.storeDataLocally("mixList", JSON.stringify(data))
+	}
+	updateDataFromServer = async (force) => {
+		var localMixList = await this.getDataLocally("mixList");
+		localMixList = JSON.parse(localMixList)
+		// console.log(localMixList[0].tacks[0].trackTitle);
+
+		if (!localMixList || !localMixList[0] || !localMixList[0].mixtitle || force) {
+			localMixList = await this.getMixList();
+			console.log("Getting mixList from server");
+			this.storeDataLocally("mixList", JSON.stringify(localMixList))
 		}
-		var List = []
-		for (let i = 0; i < data.length; i++) {//风险
-			List = [...List, ...data[i].tracks]
+		var localAllTracksList = []
+		for (let i = 0; i < localMixList.length; i++) {//风险
+			localAllTracksList = [...localAllTracksList, ...localMixList[i].tracks]
 		}
-		this.setState({ mixList: data, allTracksList: List })
+
+		var arr = []
+		for (let i = 0; i < localMixList.length; i++) {
+			arr.push(localMixList.cover)
+		}
+		this.setState({ mixList: localMixList, allTracksList: localAllTracksList, coverList: arr })
 	}
 	getMixList = () => {
 		return new Promise((resolve, reject) => {
@@ -468,7 +501,8 @@ export default class AlignItemsBasics extends React.Component {
 			}
 		}
 		await TrackPlayer.play()//跳转完后要play(this is f**king stupid)
-		this.setState({ lastTrack: requestingTrack, playState: true })
+		this.setState({ playState: true })//放权给eventlistener指出lastTrack是谁
+		//this.setState({ lastTrack: requestingTrack, playState: true })
 		if (!this.existsInHistoryList(requestingTrack)) {//如果历史记录没有此歌就记录
 			this.state.historyList.push(requestingTrack)
 		} else {
@@ -540,9 +574,10 @@ function initApp() {
 	TrackPlayer.registerPlaybackService(() => require('./trackserver.js'));
 	TrackPlayer.setupPlayer().then(async () => {
 		TrackPlayer.updateOptions({
-			capabilities: [CAPABILITY_PLAY, CAPABILITY_PAUSE, CAPABILITY_STOP, CAPABILITY_SKIP_TO_NEXT, CAPABILITY_SKIP_TO_PREVIOUS, CAPABILITY_JUMP_FORWARD, CAPABILITY_JUMP_BACKWARD],
-			notificationCapabilities: [CAPABILITY_PLAY, CAPABILITY_PAUSE, CAPABILITY_STOP, CAPABILITY_SKIP_TO_NEXT, CAPABILITY_SKIP_TO_PREVIOUS, CAPABILITY_JUMP_FORWARD, CAPABILITY_JUMP_BACKWARD],
-			compactCapabilities: [CAPABILITY_PLAY, CAPABILITY_PAUSE, CAPABILITY_STOP, CAPABILITY_SKIP_TO_NEXT, CAPABILITY_SKIP_TO_PREVIOUS, CAPABILITY_JUMP_FORWARD, CAPABILITY_JUMP_BACKWARD]
+			capabilities: [CAPABILITY_PLAY, CAPABILITY_PAUSE, CAPABILITY_SKIP_TO_NEXT, CAPABILITY_SKIP_TO_PREVIOUS],
+			notificationCapabilities: [CAPABILITY_PLAY, CAPABILITY_PAUSE, CAPABILITY_SKIP_TO_NEXT, CAPABILITY_SKIP_TO_PREVIOUS],
+			compactCapabilities: [CAPABILITY_PLAY, CAPABILITY_PAUSE, CAPABILITY_SKIP_TO_NEXT, CAPABILITY_SKIP_TO_PREVIOUS],
+			
 		})
 	});
 

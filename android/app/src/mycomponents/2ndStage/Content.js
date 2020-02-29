@@ -31,18 +31,25 @@ export default class Content extends React.Component {
                         </TouchableWithoutFeedback>
                         <Icon name="more-vert" size={20} color="#fff" style={MyStyle.ContentMixesBarMore} />
                         <Icon style={MyStyle.ContentMixesBarDropDown} name="expand-more" size={20} color="#fff" />
-                        <Text style={MyStyle.ContentMixesBarTitle}>  Mix created<Text style={MyStyle.description}> {"("+this.props.mixlist.length+")"}</Text></Text>
+                        <Text style={MyStyle.ContentMixesBarTitle}>  Mix created<Text style={MyStyle.description}> {"(" + this.props.mixlist.length + ")"}</Text></Text>
                     </View>
                     <FlatList
+                        onRefresh={() => {
+                            console.log("update");
+                            
+                            this.props.handlers.updatedatafromserver(true)
+                        }}
+                        refreshing={false}
                         data={this.props.mixlist}
                         renderItem={({ item, index }) => {
                             return <Mix
                                 screenheight={this.props.screenheight}
                                 mixtitle={item.mixtitle}
                                 mixsubtitle={item.mixsubtitle}
+                                mixcover={item.cover}
                                 globalnavigator={this.props.handlers.globalnavigator}
                                 changenewmenustate={this.props.handlers.changenewmenustate}
-                                
+
                                 id={item.id}
                             ></Mix>
                         }}
