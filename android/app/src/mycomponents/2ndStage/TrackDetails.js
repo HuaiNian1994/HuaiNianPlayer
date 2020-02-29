@@ -59,6 +59,19 @@ export default class TrackDetails extends React.Component {
 			inputRange: [0, 60],
 			outputRange: ["0deg", "360deg"]
 		})
+
+		var playOrderBtn = null;
+		switch (this.props.playorder) {//巨坑
+			case "Loop single":
+				playOrderBtn = <Image style={{ width: "100%", height: "100%" }} source={require("../../images/btn/other/loop1.png")} ></Image>
+				break;
+			case "Shuffle":
+				playOrderBtn = <Image style={{ width: "100%", height: "100%" }} source={require("../../images/btn/other/shuffle.png")} ></Image>
+				break;
+			default:
+				playOrderBtn = <Image style={{ width: "100%", height: "100%" }} source={require("../../images/btn/other/loopAll.png")} ></Image>
+				break;
+		}
 		return (
 			<Animated.View style={[MyStyle.TrackDetails, { opacity: this.state.opacity }]}>
 				{/* ***************************背景区开始 *************************/}
@@ -103,7 +116,10 @@ export default class TrackDetails extends React.Component {
 					<Progress></Progress>
 
 					<View style={MyStyle.TrackDetailsButtonGroup}>
-						<Image style={{ position: "absolute", width: "12%", height: "28%", left: "7%" }} source={require("../../images/btn/other/loop1.png")}></Image>
+						{/* 启示:以调用并执行的形式注册一个事件处理函数时，一定要用一个不执行的函数包裹，否则会有不可预知的后果 */}
+						<TouchableOpacity onPress={() => { this.props.handlers.changeplayorder() }} style={{ position: "absolute", width: "12%", height: "28%", left: "7%" }}>
+							{playOrderBtn}
+						</TouchableOpacity>
 
 						<TouchableOpacity style={{ position: "absolute", width: "12%", height: "28%", left: "25%" }} onPress={() => { this.props.handlers.changeplaystate("previous") }}>
 							<Image style={{ width: "100%", height: "100%" }} source={require("../../images/btn/previous.png")}></Image>
@@ -151,17 +167,17 @@ class Progress extends ProgressComponent {
 		onPanResponderRelease: (e, gestureState) => {
 			const Beginning = Math.round(screenWidth * 0.3 / 2);
 			const Ending = screenWidth - Beginning;
-			const X=Math.round(gestureState.x0)
-			var relativeX=null;
-			if(X<Beginning ){//x是一个按钮相对于进度条的坐标。意指手放开后，按钮应被挪到的位置
-				relativeX=0;
-			}else if(X>Ending ){
-				relativeX=Ending-Beginning;
-			}else{
-				relativeX=X-Beginning;
+			const X = Math.round(gestureState.x0)
+			var relativeX = null;
+			if (X < Beginning) {//x是一个按钮相对于进度条的坐标。意指手放开后，按钮应被挪到的位置
+				relativeX = 0;
+			} else if (X > Ending) {
+				relativeX = Ending - Beginning;
+			} else {
+				relativeX = X - Beginning;
 			}
-			const playPrecent=relativeX/(screenWidth*0.7);
-			TrackPlayer.seekTo(this.state.duration*playPrecent);
+			const playPrecent = relativeX / (screenWidth * 0.7);
+			TrackPlayer.seekTo(this.state.duration * playPrecent);
 		},
 	})
 	render() {

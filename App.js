@@ -1,7 +1,7 @@
 ﻿import React, { Component } from 'react';
 import AsyncStorage from '@react-native-community/async-storage'
 import { View, Text, BackHandler, TextInput, TouchableWithoutFeedback, findNodeHandle, FlatList, PermissionsAndroid, Dimensions, PixelRatio, Image, ImageBackground, ScrollView, StyleSheet, StatusBar, AppRegistry } from 'react-native';
-import TrackPlayer, { CAPABILITY_PLAY, CAPABILITY_PAUSE, CAPABILITY_STOP, CAPABILITY_SKIP_TO_NEXT, CAPABILITY_SKIP_TO_PREVIOUS, CAPABILITY_JUMP_FORWARD, CAPABILITY_JUMP_BACKWARD, STATE_NONE, STATE_PLAYING, STATE_PAUSED, STATE_STOPPED, STATE_BUFFERING } from 'react-native-track-player';
+import TrackPlayer, { CAPABILITY_PLAY, CAPABILITY_PAUSE, CAPABILITY_STOP, CAPABILITY_SKIP_TO_NEXT, CAPABILITY_SKIP_TO_PREVIOUS, CAPABILITY_JUMP_FORWARD, CAPABILITY_JUMP_BACKWARD, STATE_NONE, STATE_PLAYING, STATE_PAUSED, STATE_STOPPED, STATE_BUFFERING, STATE_READY, STATE_CONNECTING } from 'react-native-track-player';
 import { name as appName } from './app.json'; //唯一的入口名称
 import MyStyle from './android/app/src/mycomponents/1stStage/style'
 import Nav from './android/app/src/mycomponents/2ndStage/Nav'
@@ -17,6 +17,9 @@ import { exists } from 'react-native-fs';
 // import { BlurView } from "@react-native-community/blur";
 
 initApp();
+var controlledAuto = true;
+var controlledAutoTimer = null;//为连续选取歌曲而设计
+var skipedAuto = false;
 //规定：规定必须写在根组件页面
 //规定：二级组件必须以对象的形式传递根组件的处理函数，对象名为handlers
 //规定：buttonName的值与该button文本的实际值一致
@@ -107,16 +110,18 @@ export default class AlignItemsBasics extends React.Component {
 							screenheight={this.state.containerHeight}
 							playstate={this.state.playState}
 							playingtrack={this.state.lastTrack}
+							playorder={this.state.playOrder}
 							handlers={{
 								changeplaystate: this.changePlayState,
 								changeplayliststate: this.changePlayListState,
-
+								changeplayorder: this.changePlayOrder
 							}}
 						>
 						</TrackDetails>
 						: <FootPlayer
 							playstate={this.state.playState}
 							playingtracktitle={this.state.lastTrack ? this.state.lastTrack.trackTitle : "Welcome to the world ,HuaiNian!"}
+							nowcover={this.state.nowCover}
 							handlers={{
 								changeplaystate: this.changePlayState,
 								globalnavigator: this.globalNavigator,
@@ -213,13 +218,17 @@ export default class AlignItemsBasics extends React.Component {
 			allTracksList: [],
 			playState: false,
 			lastTrack: null,
-			playOrder: "Loop All",
-			controlledAuto: false,
+			playOrder: "Loop all",
+			playOrderList: ["Loop all", "Loop single", "Shuffle"],
+
+
 			coverList: [],
+			nowCover: "",
 
 			//opening a Record
 			resordsOn: false,
 			activeRecord: null,
+
 
 
 			//fade out
@@ -235,6 +244,20 @@ export default class AlignItemsBasics extends React.Component {
 		}
 
 	}
+	randomNumberGenerator = (min, max) => {//闭区间
+		min = min ? min : 0;
+		max = max ? max : 100;
+		return Math.floor(Math.random() * (max - min + 1) + min);
+	}
+	changePlayOrder = () => {
+		let index = this.state.playOrderList.indexOf(this.state.playOrder)
+		let next = index == this.state.playOrderList.length - 1 ? 0 : index + 1;
+		console.log("the play order now is :" + this.state.playOrderList[next]);
+		this.setState({ playOrder: this.state.playOrderList[next] })
+
+
+	}
+
 	backgroundFadeOut = () => {
 		var opacity = 1;
 		var timer = setInterval(() => {
@@ -266,32 +289,81 @@ export default class AlignItemsBasics extends React.Component {
 	}
 	async componentDidMount() {
 		this.updateDataFromServer();
-		
-		TrackPlayer.addEventListener('playback-track-changed', async (dataAutoProvided) => {
-			const track = await TrackPlayer.getTrack(dataAutoProvided.nextTrack);
-			if (track) {
-				this.setState({ lastTrack: this.state.allTracksList[track.id] });
-				// await TrackPlayer.updateOptions({})
-			}
-		});
-		TrackPlayer.addEventListener('remote-play', () => {
-			TrackPlayer.play()
-			this.setState({playState:true})
-		});
-		TrackPlayer.addEventListener('remote-pause', () =>{
-			TrackPlayer.pause()
-			this.setState({playState:false})
-		});
-		TrackPlayer.addEventListener('remote-next', () => TrackPlayer.skipToNext());
-		TrackPlayer.addEventListener('remote-previous', () => TrackPlayer.skipToPrevious());
-
+		this.listenTrackEvents();
 		BackHandler.addEventListener("hardwareBackPress", () => {
 			this.globalNavigator("Back")
 			return true;
 		})
-
+		console.log("componentDidMount");
+	}
+	figureOutThePlayingTrack_record = async () => {
+		const trackId = await TrackPlayer.getCurrentTrack();
+		let thisTrack = this.state.allTracksList[trackId]
+		console.log("track changed, this playing track is " + thisTrack.trackTitle);
+		this.setState({ lastTrack: thisTrack });
+		if (!this.existsInHistoryList(thisTrack)) {//如果历史记录没有此歌就记录
+			this.state.historyList.push(thisTrack)
+		}
 
 	}
+	listenTrackEvents = () => {
+		TrackPlayer.addEventListener("playback-track-changed", async (dataAutoProvided) => {
+			//用户挂机时由它记录并管理播放顺序
+			if (controlledAuto) {
+				console.log("Managed by playback-track-changed Event ~~~~~~~~~~~~~~~");
+				// console.log("last track", this.state.allTracksList[dataAutoProvided.track].trackTitle);
+				if (this.state.playOrder == "Loop all") {
+					this.figureOutThePlayingTrack_record();
+				} else if (this.state.playOrder == "Loop single" && !skipedAuto) {
+					TrackPlayer.skip(dataAutoProvided.track);
+
+				} else if (this.state.playOrder == "Shuffle" && !skipedAuto) {
+					this.playRandomly(parseInt(dataAutoProvided.track));
+				}
+				skipedAuto = true;
+				setTimeout(() => {
+					skipedAuto = false
+				}, 10000)//默认一首歌不短于10秒
+			}
+		})
+		//上下这两位巨坑！！！！！！！！！！！
+		TrackPlayer.addEventListener("playback-state", async (dataAutoProvided) => {
+			var nowState = await TrackPlayer.getState();
+			if (nowState === STATE_PLAYING) {
+				console.log("playing~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+				this.setState({ playState: true })
+				if (!controlledAuto) {//用户操作时由它记录播放的Track(但不参与播放管理),因为自动切换时不会触发此事件处理函数
+					console.log("Managed by playback-state Event ~~~~~~~~~~~~~~~");
+					this.figureOutThePlayingTrack_record();
+				}
+			} else {
+				this.setState({ playState: false })
+			}
+			// if (nowState === STATE_STOPPED) console.log("the track is end or stoped");
+			// if (nowState === STATE_NONE) console.log("the track is none");
+			// if (nowState === STATE_READY) console.log("the track is ready");
+			// if (nowState === STATE_PAUSED) console.log("the track is paused");
+			// if (nowState === STATE_CONNECTING) console.log("the track is connecting");
+
+
+
+
+			// this.setState({ nowCover: this.state.coverList[this.randomNumberGenerator(0, this.state.coverList.length)] })
+		});
+		TrackPlayer.addEventListener('remote-play', () => {
+			TrackPlayer.play()
+			this.setState({ playState: true })
+		});
+		TrackPlayer.addEventListener('remote-pause', () => {
+			TrackPlayer.pause()
+			this.setState({ playState: false })
+		});
+		TrackPlayer.addEventListener('remote-next', () => TrackPlayer.skipToNext());
+		TrackPlayer.addEventListener('remote-previous', () => TrackPlayer.skipToPrevious());
+	}
+
+
+
 	updateDataFromServer = async (force) => {
 		var localMixList = await this.getDataLocally("mixList");
 		localMixList = JSON.parse(localMixList)
@@ -306,10 +378,9 @@ export default class AlignItemsBasics extends React.Component {
 		for (let i = 0; i < localMixList.length; i++) {//风险
 			localAllTracksList = [...localAllTracksList, ...localMixList[i].tracks]
 		}
-
 		var arr = []
 		for (let i = 0; i < localMixList.length; i++) {
-			arr.push(localMixList.cover)
+			arr.push(localMixList[i].cover)
 		}
 		this.setState({ mixList: localMixList, allTracksList: localAllTracksList, coverList: arr })
 	}
@@ -469,12 +540,17 @@ export default class AlignItemsBasics extends React.Component {
 
 	//为了性能，TrackPlayer的queue要对应playList！！
 	changePlayState = async (requestingTrack) => {
-		this.setState({ controlledAuto: false })
+		clearTimeout(controlledAutoTimer)
+		controlledAuto = false;//不要写在this.state上，它性能跟不上
+		controlledAutoTimer = setTimeout(() => {
+			controlledAuto = true
+		}, 5000)//五秒后转为挂机
 		if (requestingTrack === undefined) {//如果只是单纯地切换播放状态
 			this.state.playState ? await TrackPlayer.pause() : await TrackPlayer.play();
-			this.setState({ playState: !this.state.playState });
 			return;
-		} else if (typeof requestingTrack == "string") {
+		}
+		if (typeof requestingTrack == "string") {
+			if (this.state.playOrder == "Shuffle") { this.playRandomly(this.state.lastTrack.trackId); return; }
 			var index = this.trackIndexInPlayList(this.state.lastTrack)
 			switch (requestingTrack) {
 				case "next":
@@ -490,7 +566,6 @@ export default class AlignItemsBasics extends React.Component {
 		} else {//请求的是一首具体的歌时
 			if (this.state.playState && this.state.lastTrack.trackId === requestingTrack.trackId) {//在播且请求与上次相同
 				await TrackPlayer.pause();
-				this.setState({ playState: false });
 				return;
 			} else {//没在播
 				if (!this.state.lastTrack || this.state.lastTrack.trackId != requestingTrack.trackId) {//本请求播放的歌曲和上一次的不同
@@ -501,12 +576,21 @@ export default class AlignItemsBasics extends React.Component {
 			}
 		}
 		await TrackPlayer.play()//跳转完后要play(this is f**king stupid)
-		this.setState({ playState: true })//放权给eventlistener指出lastTrack是谁
+		//放权给eventlistener
 		//this.setState({ lastTrack: requestingTrack, playState: true })
-		if (!this.existsInHistoryList(requestingTrack)) {//如果历史记录没有此歌就记录
-			this.state.historyList.push(requestingTrack)
-		} else {
 
+	}
+	
+	playRandomly = (lastTrackId) => {
+		if (this.state.playList.length > 1) {
+			var randomIndex = this.randomNumberGenerator(0, this.state.playList.length - 1)	
+			randomIndex = this.state.playList[randomIndex].trackId == lastTrackId ? randomIndex + 1 : randomIndex;
+			randomIndex = this.state.playList.length == randomIndex ? 0 : randomIndex;
+			TrackPlayer.skip(this.state.playList[randomIndex].trackId.toString());
+			this.setState({ lastTrack: this.state.playList[randomIndex] })
+		} else {
+			TrackPlayer.skip(this.state.playList[0].trackId.toString());
+			this.setState({ playOrder: "Loop single" })
 		}
 	}
 	existsInHistoryList = (Track_MyStructure) => {
@@ -577,7 +661,7 @@ function initApp() {
 			capabilities: [CAPABILITY_PLAY, CAPABILITY_PAUSE, CAPABILITY_SKIP_TO_NEXT, CAPABILITY_SKIP_TO_PREVIOUS],
 			notificationCapabilities: [CAPABILITY_PLAY, CAPABILITY_PAUSE, CAPABILITY_SKIP_TO_NEXT, CAPABILITY_SKIP_TO_PREVIOUS],
 			compactCapabilities: [CAPABILITY_PLAY, CAPABILITY_PAUSE, CAPABILITY_SKIP_TO_NEXT, CAPABILITY_SKIP_TO_PREVIOUS],
-			
+
 		})
 	});
 
