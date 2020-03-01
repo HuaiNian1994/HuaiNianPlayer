@@ -4,6 +4,8 @@ git remote add HuaiNianPlayer https://github.com/HuaiNian1994/HuaiNianPlayer.git
 
 git push --set-upstream HuaiNianPlayer master
 
+cd android && gradlew clean && cd .. && react-native run-android
+
 yarn start
 
 yarn android

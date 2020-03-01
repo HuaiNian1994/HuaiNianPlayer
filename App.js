@@ -326,7 +326,7 @@ export default class AlignItemsBasics extends React.Component {
 						skipedAuto = false
 					}, 10000)//默认一首歌不短于10秒
 				}
-			}, 200);//给controlledAuto一点更新时间
+			}, 200);//给skipedAuto 和controlledAuto一点更新时间
 		})
 		//上下这两位巨坑！！！！！！！！！！！
 		TrackPlayer.addEventListener("playback-state", async (dataAutoProvided) => {
