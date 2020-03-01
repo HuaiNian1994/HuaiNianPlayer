@@ -15,9 +15,10 @@ export default class Mixitem extends React.Component {
     render() {
         return (
             <TouchableOpacity onPress={async () => {
+                console.log("点了"+this.props.thistrack.trackTitle);
+                
                 await this.props.updateplaylist(this.props.activemix_tracklist, "Mix")
                 this.props.changeplaystate(this.props.thistrack);
-                
             }}>
                 <View style={[MyStyle.MixItem, { height: this.props.screenheight * 0.0694 }]}>
                     <View style={MyStyle.MixItemIndex}><Text style={{ color: "white" }}>{this.props.index + 1}</Text></View>

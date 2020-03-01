@@ -309,22 +309,24 @@ export default class AlignItemsBasics extends React.Component {
 	listenTrackEvents = () => {
 		TrackPlayer.addEventListener("playback-track-changed", async (dataAutoProvided) => {
 			//用户挂机时由它记录并管理播放顺序
-			if (controlledAuto) {
-				console.log("Managed by playback-track-changed Event ~~~~~~~~~~~~~~~");
-				// console.log("last track", this.state.allTracksList[dataAutoProvided.track].trackTitle);
-				if (this.state.playOrder == "Loop all") {
-					this.figureOutThePlayingTrack_record();
-				} else if (this.state.playOrder == "Loop single" && !skipedAuto) {
-					TrackPlayer.skip(dataAutoProvided.track);
+			setTimeout(() => {
+				if (controlledAuto) {
+					console.log("Managed by playback-track-changed Event ~~~~~~~~~~~~~~~");
+					// console.log("last track", this.state.allTracksList[dataAutoProvided.track].trackTitle);
+					if (this.state.playOrder == "Loop all") {
+						this.figureOutThePlayingTrack_record();
+					} else if (this.state.playOrder == "Loop single" && !skipedAuto) {
+						TrackPlayer.skip(dataAutoProvided.track);
 
-				} else if (this.state.playOrder == "Shuffle" && !skipedAuto) {
-					this.playRandomly(parseInt(dataAutoProvided.track));
+					} else if (this.state.playOrder == "Shuffle" && !skipedAuto) {
+						this.playRandomly(parseInt(dataAutoProvided.track));
+					}
+					skipedAuto = true;
+					setTimeout(() => {
+						skipedAuto = false
+					}, 10000)//默认一首歌不短于10秒
 				}
-				skipedAuto = true;
-				setTimeout(() => {
-					skipedAuto = false
-				}, 10000)//默认一首歌不短于10秒
-			}
+			}, 200);//给controlledAuto一点更新时间
 		})
 		//上下这两位巨坑！！！！！！！！！！！
 		TrackPlayer.addEventListener("playback-state", async (dataAutoProvided) => {
@@ -540,6 +542,8 @@ export default class AlignItemsBasics extends React.Component {
 
 	//为了性能，TrackPlayer的queue要对应playList！！
 	changePlayState = async (requestingTrack) => {
+		console.log("changePlayState");
+
 		clearTimeout(controlledAutoTimer)
 		controlledAuto = false;//不要写在this.state上，它性能跟不上
 		controlledAutoTimer = setTimeout(() => {
@@ -580,10 +584,10 @@ export default class AlignItemsBasics extends React.Component {
 		//this.setState({ lastTrack: requestingTrack, playState: true })
 
 	}
-	
+
 	playRandomly = (lastTrackId) => {
 		if (this.state.playList.length > 1) {
-			var randomIndex = this.randomNumberGenerator(0, this.state.playList.length - 1)	
+			var randomIndex = this.randomNumberGenerator(0, this.state.playList.length - 1)
 			randomIndex = this.state.playList[randomIndex].trackId == lastTrackId ? randomIndex + 1 : randomIndex;
 			randomIndex = this.state.playList.length == randomIndex ? 0 : randomIndex;
 			TrackPlayer.skip(this.state.playList[randomIndex].trackId.toString());
