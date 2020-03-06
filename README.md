@@ -13,11 +13,11 @@
 
 ## 界面
 
-![main](ReadmeImages\main.jpg)![mix](ReadmeImages\mix.jpg)
+![main](ReadmeImages/main.jpg)![mix](ReadmeImages/mix.jpg)
 
 
 
-![track](ReadmeImages\track.jpg)![lockscreen](ReadmeImages\lockscreen.jpg)
+![track](ReadmeImages/track.jpg)![lockscreen](ReadmeImages/lockscreen.jpg)
 
 ## 局限
 
