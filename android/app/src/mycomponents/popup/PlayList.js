@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, TouchableWithoutFeedback, TextInput } from 'react-native'
 import Mystyle from '../1stStage/style'
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -13,7 +13,6 @@ export default class PlayList extends React.Component {
                     <View style={[{
                         position: "absolute",
                         width: this.props.screenwidth,
-
                         borderTopRightRadius: 20,
                         borderTopLeftRadius: 20,
                         bottom: 0,
@@ -31,7 +30,7 @@ export default class PlayList extends React.Component {
                                 height: "44%",
                                 color: "white",
                                 fontSize: 17
-                            }}> {this.props.playlisttitle+"("+this.props.playlist.length+")"}</Text>
+                            }}> {this.props.playlisttitle+"  ("+this.props.playlist.length+")"}</Text>
 
                         </View>
                         <FlatList
@@ -48,7 +47,6 @@ export default class PlayList extends React.Component {
                             keyExtractor={(item, index) => index + ""}
                             style={{ width: this.props.screenwidth, height: this.props.screenheight * 0.618}}
                             ListFooterComponent={ListFooter}
-
                         >
                         </FlatList>
                     </View>

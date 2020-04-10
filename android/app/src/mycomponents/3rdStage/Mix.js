@@ -11,13 +11,12 @@ export default class Mix extends React.Component {
 		const isFav = Boolean(this.props.mixtitle == "槐念喜欢的音乐");
 		return (
 			<TouchableOpacity onPress={() => {
-
 				this.props.globalnavigator("Mix Details", (that) => { that.setState({ activeMixId: MixId }) })
 			}}>
 				<View style={[MyStyle.Mix, { height: this.props.screenheight * 0.0694 }]}>
 					<View style={[MyStyle.MixCover, { backgroundColor: isFav ? "#000" : "transparent" }]}>
-						<Image style={{ width: "100%", height: "100%", position: "absolute", opacity: isFav ? 0.3 : 1 }} source={{ uri: "file:///storage/emulated/0/Covers/" + this.props.mixcover }}/>
-						{isFav ? <Image source={require("../../images/btn/other/love.png")} style={{width:"100%",height:"100%"}} /> : null}
+						<Image style={{ width: "100%", height: "100%", position: "absolute", opacity: isFav ? 0.3 : 1 }} source={{ uri: "file:///storage/emulated/0/Covers/" + this.props.mixcover }} />
+						{isFav ? <Image source={require("../../images/btn/other/love.png")} style={{ width: "100%", height: "100%" }} /> : null}
 					</View>
 					<Text style={MyStyle.MixTitle}>{this.props.mixtitle}</Text>
 					<View style={MyStyle.MixSubTitle}>

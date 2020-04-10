@@ -369,5 +369,15 @@ export default StyleSheet.create({//不要使用变量接收！！！坑得一B
 		justifyContent:"center",
 		alignItems:"center",
 		// backgroundColor:"red"
+	},
+	SearchResult:{
+		position: "absolute",
+		display:"none",
+		right:"4.2%",
+		width: "80%",
+		backgroundColor:"rgb(40,64,80)",
+		borderBottomLeftRadius:20,
+		borderBottomRightRadius:20
+		
 	}
 })

@@ -11,6 +11,7 @@ import FootPlayer from './android/app/src/mycomponents/2ndStage/FootPlayer'
 import NewMix from './android/app/src/mycomponents/popup/NewMix'
 import NewMenu from './android/app/src/mycomponents/popup/NewMenu.js'
 import PlayList from './android/app/src/mycomponents/popup/PlayList.js'
+import SearchResult from './android/app/src/mycomponents/popup/SearchResult.js'
 import TrackDetails from './android/app/src/mycomponents/2ndStage/TrackDetails'
 import { exists } from 'react-native-fs';
 //from 后跟的字符串末尾不要有空格！！！坑得一B！！
@@ -37,13 +38,21 @@ export default class AlignItemsBasics extends React.Component {
 					<StatusBar translucent={true} backgroundColor="transparent"></StatusBar>
 					{this.state.nowPage == "Main" && (
 						<View style={{ width: "100%", height: "100%" }}>
-							<Nav menu="sort" title="Mine" ></Nav>
+							<Nav
+								menu="sort"
+								title="Mine"
+								searchquery={this.state.searchQuery}
+								handlers={{
+									search: this.search,
+									searchquerymonitor:this.searchQueryMonitor
+								}}></Nav>
 							<Content
 								handlers={{
 									changenewmenustate: this.changeNewMenuState,
 									changenewmixstate: this.changeNewMixState,
 									globalnavigator: this.globalNavigator,
-									updatedatafromserver: this.updateDataFromServer
+									updatedatafromserver: this.updateDataFromServer,
+
 								}}
 								screenheight={this.state.containerHeight}
 								screenwidth={this.state.containerWidth}
@@ -57,8 +66,12 @@ export default class AlignItemsBasics extends React.Component {
 					{this.state.nowPage == "Mix Details" && (
 						<View style={{ width: "100%", height: "100%" }}>
 							<Nav menu="arrow-back" title="Mix"
+								searchquery={this.state.searchQuery}
+								
 								handlers={{
-									globalnavigator: this.globalNavigator
+									globalnavigator: this.globalNavigator,
+									search: this.search,
+									searchquerymonitor:this.searchQueryMonitor
 								}}></Nav>
 							<MixDetails
 								handlers={{
@@ -170,6 +183,21 @@ export default class AlignItemsBasics extends React.Component {
 						deleteplaylisttrack: this.deletePlayListTrack,
 					}}
 				></PlayList>
+				<SearchResult
+					screenwidth={this.state.containerWidth}
+					screenheight={this.state.containerHeight}
+					showsearchresult={this.state.showSearchResult}
+					searchresults={this.state.searchResults}
+					activemix_tracklist={this.state.allTracksList}
+					handlers={{
+						closesearchresult: this.closeSearchResult,
+						changeplaystate: this.changePlayState,
+						updateplaylist: this.updatePlayList,
+						clearsearchhistory:this.clearSearchHistory
+					}}
+				>
+				</SearchResult>
+				
 
 			</View>
 		);
@@ -238,7 +266,10 @@ export default class AlignItemsBasics extends React.Component {
 			//using playList
 			showPlayList: false,
 
-
+			//using search
+			showSearchResult: false,
+			searchResults: [],
+			searchQuery: null,
 
 
 		}
@@ -249,13 +280,30 @@ export default class AlignItemsBasics extends React.Component {
 		max = max ? max : 100;
 		return Math.floor(Math.random() * (max - min + 1) + min);
 	}
+	closeSearchResult = () => {
+		this.setState({ showSearchResult: false })
+	}
+	search = () => {
+		this.clearSearchHistory()
+		if(!this.state.searchQuery) {this.closeSearchResult(); return;}
+		let arr=[];
+		let exp=new RegExp(this.state.searchQuery,"i")
+		for (let i = 0; i < this.state.allTracksList.length ; i++) {
+			if (exp.test(this.state.allTracksList[i].trackSubTitle)) {
+				arr.push(this.state.allTracksList[i])
+			}
+		}
+		if(arr.length===0) {this.closeSearchResult(); return;}
+		this.setState({ showSearchResult: true ,searchResults:arr})
+	}
+	clearSearchHistory=()=>{
+		this.setState({searchResults:[]})
+	}
 	changePlayOrder = () => {
 		let index = this.state.playOrderList.indexOf(this.state.playOrder)
 		let next = index == this.state.playOrderList.length - 1 ? 0 : index + 1;
 		console.log("the play order now is :" + this.state.playOrderList[next]);
 		this.setState({ playOrder: this.state.playOrderList[next] })
-
-
 	}
 
 	backgroundFadeOut = () => {
@@ -291,7 +339,13 @@ export default class AlignItemsBasics extends React.Component {
 		this.updateDataFromServer();
 		this.listenTrackEvents();
 		BackHandler.addEventListener("hardwareBackPress", () => {
-			this.globalNavigator("Back")
+			if(this.state.showSearchResult){
+				console.log("bbbb");
+				
+				this.closeSearchResult()
+			}else{
+				this.globalNavigator("Back")
+			}
 			return true;
 		})
 		console.log("componentDidMount");
@@ -435,7 +489,9 @@ export default class AlignItemsBasics extends React.Component {
 	newMixMonitor = (e) => {
 		this.setState({ NewMixComponent_input: e })
 	}
-
+	searchQueryMonitor = (e) => {
+		this.setState({ searchQuery: e })
+	}
 	//业务触发者：Mix.more-vert
 	//业务返回者：NewMenu
 	//传递路径1：APP->Content->ContentMixes->Mix.more-vert
